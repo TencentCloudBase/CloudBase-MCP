@@ -562,7 +562,7 @@ For non-WeChat login (Web):
 ```json
 {
   "read": true,
-  "write": "doc.uid == auth.uid"
+  "write": "doc._openid == auth.uid"
 }
 ```
 
@@ -579,8 +579,8 @@ For WeChat login:
 For non-WeChat login (Web):
 ```json
 {
-  "read": "doc.uid == auth.uid",
-  "write": "doc.uid == auth.uid"
+  "read": "doc._openid == auth.uid",
+  "write": "doc._openid == auth.uid"
 }
 ```
 
