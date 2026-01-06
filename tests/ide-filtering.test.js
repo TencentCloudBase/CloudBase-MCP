@@ -4,6 +4,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { expect, test } from 'vitest';
+import { resolveDownloadTemplateIDE, validateIDE } from '../mcp/src/tools/setup.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,12 +32,13 @@ test('downloadTemplate tool supports IDE filtering', async () => {
     transport = new StdioClientTransport({
       command: 'node',
       args: [serverPath],
-      env: { ...process.env }
+      // Only enable the minimal plugin set to speed up server startup in tests
+      env: { ...process.env, CLOUDBASE_MCP_PLUGINS_ENABLED: "setup" }
     });
 
     // Connect client to server
     await client.connect(transport);
-    await delay(3000);
+    await delay(500);
 
     console.log('Testing downloadTemplate tool availability...');
     
@@ -97,182 +99,35 @@ test('downloadTemplate tool supports IDE filtering', async () => {
 }, 90000);
 
 test('downloadTemplate tool validates IDE parameter correctly', async () => {
-  let transport = null;
-  let client = null;
-  
-  try {
-    console.log('Testing downloadTemplate IDE parameter validation...');
-    
-    // Create client
-    client = new Client({
-      name: "test-client-ide-validation",
-      version: "1.0.0",
-    }, {
-      capabilities: {}
-    });
+  const invalid = validateIDE('invalid-ide-type');
+  expect(invalid.valid).toBe(false);
+  expect(invalid.error).toContain('不支持的IDE类型');
+  expect(invalid.supportedIDEs).toBeDefined();
+  expect(invalid.supportedIDEs).toContain('cursor');
 
-    // Use the CJS CLI for integration testing
-    const serverPath = join(__dirname, '../mcp/dist/cli.cjs');
-    transport = new StdioClientTransport({
-      command: 'node',
-      args: [serverPath],
-      env: { ...process.env }
-    });
-
-    // Connect client to server
-    await client.connect(transport);
-    await delay(3000);
-
-    console.log('Testing invalid IDE parameter...');
-    
-    // Test with invalid IDE type (this should fail gracefully)
-    try {
-      const result = await client.callTool('downloadTemplate', {
-        template: 'rules',
-        ide: 'invalid-ide-type',
-        overwrite: false
-      });
-      
-      // If we get here, the tool should return an error message
-      expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('不支持的IDE类型');
-      console.log('✅ Invalid IDE type properly rejected');
-      
-    } catch (error) {
-      // This is also acceptable - the tool might throw an error for invalid parameters
-      console.log('✅ Invalid IDE type caused expected error:', error.message);
-    }
-    
-    console.log('✅ downloadTemplate IDE validation test passed');
-    
-  } catch (error) {
-    console.error('❌ downloadTemplate IDE validation test failed:', error);
-    throw error;
-  } finally {
-    if (client) {
-      await client.close();
-    }
-    if (transport) {
-      await transport.close();
-    }
-  }
-}, 90000);
+  expect(validateIDE('all').valid).toBe(true);
+  expect(validateIDE('cursor').valid).toBe(true);
+});
 
 test('downloadTemplate tool requires IDE parameter when not detected', async () => {
-  let transport = null;
-  let client = null;
-  const originalEnv = process.env.INTEGRATION_IDE;
-  
-  try {
-    console.log('Testing downloadTemplate IDE parameter requirement...');
-    
-    // Use the CJS CLI for integration testing
-    // Remove INTEGRATION_IDE from env to test error case
-    const testEnv = { ...process.env };
-    delete testEnv.INTEGRATION_IDE;
-    
-    const serverPath = join(__dirname, '../mcp/dist/cli.cjs');
-    
-    // Test 1: Without IDE parameter and without INTEGRATION_IDE env var (should return error)
-    console.log('Test 1: Testing IDE parameter requirement (no INTEGRATION_IDE env var)...');
-    
-    client = new Client({
-      name: "test-client-ide-required",
-      version: "1.0.0",
-    }, {
-      capabilities: {}
-    });
-
-    transport = new StdioClientTransport({
-      command: 'node',
-      args: [serverPath],
-      env: testEnv
-    });
-
-    await client.connect(transport);
-    await delay(3000);
-    
-    try {
-      const result = await client.callTool('downloadTemplate', {
-        template: 'rules',
-        overwrite: false
-      });
-      
-      // The tool should return an error message asking for IDE parameter
-      expect(result.content).toBeDefined();
-      const contentText = result.content[0]?.text || '';
-      expect(contentText).toContain('必须指定 IDE 参数');
-      console.log('✅ Tool correctly requires IDE parameter when not provided');
-      
-    } catch (error) {
-      // This is acceptable - the tool might fail for other reasons (like network)
-      console.log('⚠️ Tool call completed (may have failed for expected reasons):', error.message);
-    }
-    
-    // Clean up first connection
-    await client.close();
-    await transport.close();
-    client = null;
-    transport = null;
-    
-    // Test 2: With explicit IDE parameter (should work)
-    console.log('Test 2: Testing with explicit IDE parameter...');
-    
-    client = new Client({
-      name: "test-client-ide-explicit",
-      version: "1.0.0",
-    }, {
-      capabilities: {}
-    });
-    
-    transport = new StdioClientTransport({
-      command: 'node',
-      args: [serverPath],
-      env: testEnv
-    });
-    
-    await client.connect(transport);
-    await delay(3000);
-    
-    try {
-      const result = await client.callTool('downloadTemplate', {
-        template: 'rules',
-        ide: 'cursor',
-        overwrite: false
-      });
-      
-      // The tool should work with explicit IDE parameter
-      expect(result.content).toBeDefined();
-      console.log('✅ Tool works with explicit IDE parameter');
-      
-    } catch (error) {
-      // This is acceptable - the tool might fail for other reasons (like network)
-      console.log('⚠️ Tool call completed (may have failed for expected reasons):', error.message);
-    }
-    
-    console.log('✅ downloadTemplate IDE parameter requirement test passed');
-    
-  } catch (error) {
-    console.error('❌ downloadTemplate IDE parameter requirement test failed:', error);
-    throw error;
-  } finally {
-    if (client) {
-      try {
-        await client.close();
-      } catch (e) {
-        // Ignore close errors
-      }
-    }
-    if (transport) {
-      try {
-        await transport.close();
-      } catch (e) {
-        // Ignore close errors
-      }
-    }
-    // Restore original env
-    if (originalEnv) {
-      process.env.INTEGRATION_IDE = originalEnv;
-    }
+  const r1 = resolveDownloadTemplateIDE(undefined, undefined);
+  expect(r1.ok).toBe(false);
+  if (!r1.ok) {
+    expect(r1.reason).toBe('missing_ide');
+    expect(r1.supportedIDEs).toContain('cursor');
   }
-}, 60000); 
+
+  const r2 = resolveDownloadTemplateIDE(undefined, 'SomeUnknownIDE');
+  expect(r2.ok).toBe(false);
+  if (!r2.ok) {
+    expect(r2.reason).toBe('unmapped_integration_ide');
+    expect(r2.integrationIDE).toBe('SomeUnknownIDE');
+    expect(r2.supportedIDEs).toContain('cursor');
+  }
+
+  const r3 = resolveDownloadTemplateIDE('cursor', undefined);
+  expect(r3.ok).toBe(true);
+  if (r3.ok) {
+    expect(r3.resolvedIDE).toBe('cursor');
+  }
+});

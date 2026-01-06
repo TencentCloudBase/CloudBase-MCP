@@ -208,6 +208,44 @@ const INTEGRATION_IDE_MAPPING: Record<string, string> = {
   iFlow: "iflow-cli",
 };
 
+export type DownloadTemplateIdeResolution =
+  | { ok: true; resolvedIDE: string }
+  | {
+      ok: false;
+      reason: "missing_ide" | "unmapped_integration_ide";
+      supportedIDEs: string[];
+      integrationIDE?: string;
+    };
+
+// Resolve IDE for downloadTemplate without side effects (unit-test friendly).
+export function resolveDownloadTemplateIDE(
+  ide: string | undefined,
+  integrationIDE: string | undefined,
+): DownloadTemplateIdeResolution {
+  if (ide) {
+    return { ok: true, resolvedIDE: ide };
+  }
+
+  if (integrationIDE) {
+    const mappedIDE = INTEGRATION_IDE_MAPPING[integrationIDE];
+    if (mappedIDE) {
+      return { ok: true, resolvedIDE: mappedIDE };
+    }
+    return {
+      ok: false,
+      reason: "unmapped_integration_ide",
+      integrationIDE,
+      supportedIDEs: IDE_TYPES.filter((t) => t !== "all"),
+    };
+  }
+
+  return {
+    ok: false,
+    reason: "missing_ide",
+    supportedIDEs: IDE_TYPES.filter((t) => t !== "all"),
+  };
+}
+
 // 根据 INTEGRATION_IDE 环境变量获取默认 IDE 类型
 // 下载文件到临时目录
 async function downloadFile(url: string, filePath: string): Promise<void> {
@@ -358,7 +396,7 @@ async function copyFile(
 }
 
 // IDE验证函数
-function validateIDE(ide: string): {
+export function validateIDE(ide: string): {
   valid: boolean;
   error?: string;
   supportedIDEs?: string[];
@@ -514,39 +552,35 @@ export function registerSetupTools(server: ExtendedMcpServer) {
       overwrite?: boolean;
     }) => {
       try {
-        // 如果没有传入 ide 参数，尝试从环境变量获取
-        let resolvedIDE = ide;
-        if (!resolvedIDE) {
-          const integrationIDE = process.env.INTEGRATION_IDE;
-          if (integrationIDE) {
-            const mappedIDE = INTEGRATION_IDE_MAPPING[integrationIDE];
-            if (mappedIDE) {
-              resolvedIDE = mappedIDE;
-            } else {
-              // 环境变量存在但无法映射，要求用户显式传入 ide 参数
-              const supportedIDEs = IDE_TYPES.filter(t => t !== "all").join(", ");
-              return {
-                content: [
-                  {
-                    type: "text",
-                    text: `❌ 无法识别当前 IDE 环境\n\n检测到 INTEGRATION_IDE="${integrationIDE}"，但无法映射到支持的 IDE 类型。\n\n请显式传入 \`ide\` 参数来指定要下载的 IDE 配置。\n\n支持的 IDE 类型: ${supportedIDEs}\n\n示例: \`ide: "cursor"\` 或 \`ide: "all"\`（下载所有 IDE 配置）`,
-                  },
-                ],
-              };
-            }
-          } else {
-            // 环境变量不存在，要求用户必须传入 ide 参数
-            const supportedIDEs = IDE_TYPES.filter(t => t !== "all").join(", ");
+        const ideResolution = resolveDownloadTemplateIDE(
+          ide,
+          process.env.INTEGRATION_IDE,
+        );
+
+        if (!ideResolution.ok) {
+          const supportedIDEs = ideResolution.supportedIDEs.join(", ");
+          if (ideResolution.reason === "unmapped_integration_ide") {
             return {
               content: [
                 {
                   type: "text",
-                  text: `❌ 必须指定 IDE 参数\n\n请传入 \`ide\` 参数来指定要下载的 IDE 配置。\n\n支持的 IDE 类型: ${supportedIDEs}\n\n示例: \`ide: "cursor"\` 或 \`ide: "all"\`（下载所有 IDE 配置）`,
+                  text: `❌ 无法识别当前 IDE 环境\n\n检测到 INTEGRATION_IDE="${ideResolution.integrationIDE}"，但无法映射到支持的 IDE 类型。\n\n请显式传入 \`ide\` 参数来指定要下载的 IDE 配置。\n\n支持的 IDE 类型: ${supportedIDEs}\n\n示例: \`ide: "cursor"\` 或 \`ide: "all"\`（下载所有 IDE 配置）`,
                 },
               ],
             };
           }
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ 必须指定 IDE 参数\n\n请传入 \`ide\` 参数来指定要下载的 IDE 配置。\n\n支持的 IDE 类型: ${supportedIDEs}\n\n示例: \`ide: "cursor"\` 或 \`ide: "all"\`（下载所有 IDE 配置）`,
+              },
+            ],
+          };
         }
+
+        const resolvedIDE = ideResolution.resolvedIDE;
 
         // 验证IDE类型
         const ideValidation = validateIDE(resolvedIDE);

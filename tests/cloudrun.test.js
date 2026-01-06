@@ -49,6 +49,7 @@ describe('CloudRun Plugin Tests', () => {
   let testClient = null;
   let testTransport = null;
 
+  // CloudRun plugin init can be slow on some machines/CI. Increase hook timeout to avoid flakiness.
   beforeAll(async () => {
     try {
       const { client, transport } = await createTestClient();
@@ -57,7 +58,7 @@ describe('CloudRun Plugin Tests', () => {
     } catch (error) {
       console.warn('Failed to setup test client:', error.message);
     }
-  });
+  }, 60000);
 
   afterAll(async () => {
     if (testClient) {

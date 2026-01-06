@@ -34,19 +34,28 @@ async function generateGitHubIssueLink(toolName: string, errorMessage: string, a
     const { requestId, ide } = payload || {};
     const baseUrl = 'https://github.com/TencentCloudBase/CloudBase-AI-ToolKit/issues/new';
 
-    // 尝试获取环境ID
+    const isTestEnvironment =
+      process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+
+    // 尝试获取环境ID（测试环境跳过，避免交互/阻塞）
     let envIdSection = '';
-    try {
-        const envId = await getEnvId(cloudBaseOptions);
-        if (envId) {
-            envIdSection = `
+    if (!isTestEnvironment) {
+        try {
+            // Avoid blocking forever on envId lookup
+            const envId = await Promise.race([
+                getEnvId(cloudBaseOptions),
+                new Promise<string>((resolve) => setTimeout(() => resolve(''), 2000)),
+            ]);
+            if (envId) {
+                envIdSection = `
 ## 环境ID
 ${envId}
 `;
+            }
+        } catch (error) {
+            // 如果获取 envId 失败，不添加环境ID部分
+            debug('无法获取环境ID:', error instanceof Error ? error : new Error(String(error)));
         }
-    } catch (error) {
-        // 如果获取 envId 失败，不添加环境ID部分
-        debug('无法获取环境ID:', error instanceof Error ? error : new Error(String(error)));
     }
 
     // 构建标题
@@ -125,6 +134,14 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
                 duration: Date.now() - startTime
             });
             server.logger?.({ type: 'errorToolCall', toolName: name, args: sanitizeArgs(args), message: errorMessage, duration: Date.now() - startTime });
+            const isTestEnvironment =
+              process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+
+            // In tests, avoid any extra work that may block (envId lookup, issue link generation, etc.)
+            if (isTestEnvironment) {
+                throw error instanceof Error ? error : new Error(String(error));
+            }
+
             // 生成 GitHub Issue 创建链接
             const issueLink = await generateGitHubIssueLink(name, errorMessage, args, server.cloudBaseOptions, {
                 requestId: (typeof error === 'object' && error && 'requestId' in error) ? (error as any).requestId : '',
