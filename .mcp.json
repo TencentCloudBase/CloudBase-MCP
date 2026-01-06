@@ -3,7 +3,6 @@
     "cloudbase": {
       "command": "npx",
       "args": [
-        "npm-global-exec@latest",
         "@cloudbase/cloudbase-mcp@latest"
       ],
       "env": {

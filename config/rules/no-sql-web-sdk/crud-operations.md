@@ -10,12 +10,14 @@ Add a new document to a collection:
 
 ```javascript
 // Add a single document
+// Note: _openid is automatically added by SDK, do not include it in the data
 const result = await db.collection('todos').add({
     title: 'Learn CloudBase',
     description: 'Study the database API',
     completed: false,
     priority: 'high',
     createdAt: new Date()
+    // _openid is automatically populated from authenticated user session
 });
 
 console.log('Added document with ID:', result.id);
@@ -112,11 +114,13 @@ Update a specific document by its ID:
 
 ```javascript
 // Update by ID
+// Note: Do not include _openid in update data - it cannot be modified
 const result = await db.collection('todos')
     .doc('todo-id-123')
     .update({
         completed: true,
         updatedAt: new Date()
+        // _openid cannot be updated and should not be included
     });
 
 console.log('Updated:', result.updated, 'document(s)');
@@ -155,10 +159,12 @@ Only update specific fields (other fields remain unchanged):
 
 ```javascript
 // Only update the title, leave other fields unchanged
+// Note: _openid cannot be updated and should not be included
 await db.collection('todos')
     .doc('todo-id-123')
     .update({
         title: 'Updated Title'
+        // _openid remains unchanged and cannot be modified
     });
 ```
 
@@ -520,4 +526,33 @@ await db.runTransaction(async transaction => {
 8. **Limit updates**: Only update changed fields
 9. **Configure security rules**: Use `writeSecurityRule` MCP tool to set database permissions before operations. See `./security-rules.md` for details. **Note:** Security rule changes take effect after a few minutes due to caching.
 10. **Log operations**: Track important data changes
+
+## Important: `_openid` Field Management
+
+**CRITICAL: Never include `_openid` in write operations**
+
+The `_openid` field is **automatically managed by the CloudBase SDK** and should **never** be included in any write operation data:
+
+- **Automatic Assignment**: When you perform create, update, or set operations through the SDK, the system automatically writes the `_openid` field based on the current authenticated user's identity
+- **Do Not Include**: The `_openid` field should **not** appear in any `data` parameter for write operations (`.add()`, `.update()`, `.set()`)
+- **Error on Manual Setting**: If you manually include or modify `_openid` in write operations, the operation will **fail with an error**
+
+**Correct Usage:**
+```javascript
+// Correct: Do not include _openid
+await db.collection('todos').add({
+    title: 'My Todo',
+    completed: false
+    // _openid is automatically added by SDK
+});
+
+// Wrong: Including _openid will cause an error
+await db.collection('todos').add({
+    title: 'My Todo',
+    completed: false,
+    _openid: 'some-id'  // ERROR: Cannot manually set _openid
+});
+```
+
+**Note:** The `_openid` field is used internally by CloudBase for user identification and permission control. It is automatically populated from the authenticated user's session and cannot be manually overridden.
 

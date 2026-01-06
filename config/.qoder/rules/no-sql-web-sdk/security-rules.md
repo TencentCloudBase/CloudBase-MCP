@@ -4,15 +4,15 @@ This document covers how to configure security rules for CloudBase NoSQL databas
 
 ## Overview
 
-**⚠️ Important:** To control database permissions, you **MUST** use the MCP tool `writeSecurityRule` to configure security rules. Security rule changes take effect after a few minutes due to caching.
+**Important:** To control database permissions, you **MUST** use the MCP tool `writeSecurityRule` to configure security rules. Security rule changes take effect after a few minutes due to caching.
 
 **General Rule:** In most cases, use **simple permissions** (READONLY, PRIVATE, ADMINWRITE, ADMINONLY). Only use CUSTOM rules when you need fine-grained control.
 
-### 🚨 Critical Understanding: Query Condition Requirements
+### Critical Understanding: Query Condition Requirements
 
 **Security rules are validation-based, NOT filter-based.**
 
-Security rules require that **query conditions from the frontend must be a subset of the security rules**, otherwise access will be denied. 
+For query or update operations, the **input query conditions must be a subset of the security rules**. The system does **not** actually fetch data from the database. Instead, it validates whether the input query conditions form a subset of the security rules. If the query conditions are not a subset of the rules, it indicates an attempt to access data without permission, and the operation will be **directly rejected**.
 
 **Example:**
 - If you define a read/write rule: `auth.openid == doc._openid`
@@ -21,8 +21,10 @@ Security rules require that **query conditions from the frontend must be a subse
 
 **Key Points:**
 - Security rules **validate** queries, they don't **filter** results
+- The system performs **rule matching** before any database access
 - Query conditions must match or be more restrictive than the security rule
 - Missing required conditions in queries will result in permission denied errors
+- For **create** operations, the system validates the **written data** against the security rules, not query conditions
 
 ## Data Permission Management System
 
@@ -87,7 +89,7 @@ Use CUSTOM when you need fine-grained control based on document data, user ident
 
 ### Using MCP Tool `writeSecurityRule`
 
-**⚠️ Important:** When developing applications that need permission control, you **MUST** call the `writeSecurityRule` MCP tool to configure database security rules. Do not assume permissions are already configured.
+**Important:** When developing applications that need permission control, you **MUST** call the `writeSecurityRule` MCP tool to configure database security rules. Do not assume permissions are already configured.
 
 **Basic Usage:**
 
@@ -101,7 +103,7 @@ await writeSecurityRule({
 });
 ```
 
-**⚠️ Cache Notice:** After configuring security rules, changes take effect after a few minutes (typically 2-5 minutes) due to caching. Wait a few minutes before testing the new rules.
+**Cache Notice:** After configuring security rules, changes take effect after a few minutes (typically 2-5 minutes) due to caching. Wait a few minutes before testing the new rules.
 
 ### Simple Permission Examples
 
@@ -208,6 +210,37 @@ Custom rules can use these predefined variables:
 - Contains all fields of the current document being accessed
 - For queries, `doc` represents the query conditions
 
+**Important: `_openid` Field Management**
+
+The `_openid` field is **automatically managed by the CloudBase SDK** and should **never** be included in write operations:
+
+- **Automatic Assignment**: When performing create, update, or set operations through the SDK, the system automatically writes the `_openid` field based on the current authenticated user's identity
+- **Do Not Include**: The `_openid` field should **not** appear in any `data` parameter for write operations (`.add()`, `.update()`, `.set()`)
+- **Error on Manual Setting**: If you manually include or modify `_openid` in write operations, the operation will **fail with an error**
+- **Security Rules Usage**: In security rules, you can reference `doc._openid` to check the document's owner, but you cannot modify it through write operations
+
+**Example:**
+```javascript
+// Correct: Do not include _openid in write operations
+await db.collection('todos').add({
+    title: 'My Todo',
+    completed: false
+    // _openid is automatically added by SDK
+});
+
+// Wrong: Including _openid will cause an error
+await db.collection('todos').add({
+    title: 'My Todo',
+    _openid: 'some-id'  // ERROR: Cannot manually set _openid
+});
+
+// Correct: Use _openid in security rules for permission checks
+{
+    "read": "doc._openid == auth.openid",
+    "write": "doc._openid == auth.openid"
+}
+```
+
 ### Custom Rule Examples
 
 **Example 1: User can only read/write their own documents**
@@ -273,7 +306,7 @@ await writeSecurityRule({
 
 ### Expression Syntax
 
-**⚠️ Expression Length Limit:** Expressions are pseudo-code statements. When configuring, expressions cannot be too long. A single expression is limited to **1024 characters**.
+**Expression Length Limit:** Expressions are pseudo-code statements. When configuring, expressions cannot be too long. A single expression is limited to **1024 characters**.
 
 Custom rules support JavaScript-like expressions:
 
@@ -372,7 +405,7 @@ The `get()` function allows accessing other document data during permission veri
 
 **Usage Limitations:**
 
-> ⚠️ **Important:** When using the `get()` function, note the following limitations:
+> **Important:** When using the `get()` function, note the following limitations:
 - **Variable restrictions in get parameters**: Variables `doc` that exist in get parameters must appear in query conditions in `==` or `in` format. If using `in` format, only `in` with a single value is allowed, i.e., `doc.shopId in array, array.length == 1`
 - Maximum 3 `get` functions per expression
 - Maximum access to 10 different documents
@@ -381,12 +414,12 @@ The `get()` function allows accessing other document data during permission veri
 
 **Billing Notes:**
 
-> ⚠️ **Important:** Security rules themselves are not charged, but additional data access by security rules will be counted in billing:
+> **Important:** Security rules themselves are not charged, but additional data access by security rules will be counted in billing:
 - **get() function**: Each `get()` produces additional data access
 - **Document ID queries for all write operations**: All write operations for document ID queries produce one data access
 - **Variable usage**: When not using variables, each `get()` produces one read operation. When using variables, each `get()` produces one read operation for each variable value. For example: rule `get(\`database.collection.${doc._id}\`).test`, when querying `_.or([{_id:1},{_id:2},{_id:3},{_id:4},{_id:5}])` will produce 5 reads. The system will cache reads for the same doc and field.
 
-**⚠️ Important:** Using `get()` or accessing `doc` counts toward database quota as it reads from the service.
+**Important:** Using `get()` or accessing `doc` counts toward database quota as it reads from the service.
 
 ## Best Practices
 
@@ -412,7 +445,7 @@ The `get()` function allows accessing other document data during permission veri
 - Pay attention to permission error messages in the console
 - Reasonably use logs to record permission verification processes
 
-**🚨 CRITICAL ERROR: Using ADMINWRITE with Frontend SDK**
+**CRITICAL ERROR: Using ADMINWRITE with Frontend SDK**
 
 | Error Scenario | Symptoms | Root Cause | Correct Approach |
 |---------------|----------|------------|------------------|
@@ -420,11 +453,11 @@ The `get()` function allows accessing other document data during permission veri
 | Using `PRIVATE` for product collections | Product list disappears after login | `PRIVATE` only allows creator and admin to read<br>Regular users have no permission | Use `READONLY`<br>All users can read, admin can write |
 
 **Key Understanding**:
-- ✅ `ADMINWRITE` = Cloud functions have write access, Frontend SDK **can only read**
-- ✅ `CUSTOM` = Configurable read/write permissions for Frontend SDK
-- ✅ `READONLY` = All users (including anonymous) can read, only admin can write
+- `ADMINWRITE` = Cloud functions have write access, Frontend SDK **can only read**
+- `CUSTOM` = Configurable read/write permissions for Frontend SDK
+- `READONLY` = All users (including anonymous) can read, only admin can write
 
-### ⚠️ Role-Based Access Limitations
+### Role-Based Access Limitations
 
 Security rules work **per request** and cannot selectively grant access to “some” users while denying others unless those users belong to the same ownership context. Typical examples that fail:
 
@@ -450,41 +483,97 @@ In actual use, queries are mainly divided into two types: **document ID queries*
 
 ### Query Condition Requirements
 
-Security rules require that query conditions must be a **subset** of the rules. For collection queries, `doc` represents the query conditions. This subset refers to all possible subsets of the rules, not subsets of actual data.
+**Critical: Rule Matching Mechanism**
 
-**Operation types include:** read, update, delete
+For query or update operations, the input query conditions **must be a subset** of the security rules. The system does **not** actually fetch data from the database. Instead, it validates whether the input query conditions form a subset of the security rules. If the query conditions are not a subset of the rules, it indicates an attempt to access data without permission, and the operation will be **directly rejected**.
+
+**Key Points:**
+- Security rules **validate** queries, they don't **filter** results
+- Query conditions must match or be more restrictive than the security rule
+- Missing required conditions in queries will result in permission denied errors
+- The system performs **rule matching** before any database access
+
+**Operation Types Affected:**
+
+The following operation types are subject to rule matching validation:
+- **read**: Query conditions must be a subset of the read rule
+- **write**: Query conditions must be a subset of the write rule (general write operations)
+- **update**: Query conditions must be a subset of the update rule (or write rule if update is not specified)
+- **delete**: Query conditions must be a subset of the delete rule (or write rule if delete is not specified)
+
+**Special Case - Create Operations:**
+
+For **create** operations, the system validates whether the **data being written** complies with the security rules, rather than validating query conditions. The written data must satisfy the create rule (or write rule if create is not specified).
 
 **Collection Query Examples:**
 
 ```javascript
-// collection_a security rule configuration
+// Security rule configuration for collection 'test'
+// Restricts queries to only records where age > 10
 {
     "read": "doc.age > 10"
 }
 
-// ✅ Complies with security rule
-let queryRes = db.collection('collection_a').where({
+// Complies with security rule
+// Query condition (age > 15) is a subset of the rule (age > 10)
+const res = await db.collection('test').where({
     age: _.gt(15)
 }).get()
 
-// ❌ Does not comply with security rule
-let queryRes = db.collection('collection_a').where({
+// Does not comply with security rule
+// Query condition (age > 8) is NOT a subset of the rule (age > 10)
+// This would attempt to access records with age between 8-10, which violates the rule
+const res = await db.collection('test').where({
     age: _.gt(8)
 }).get()
 
-// ✅ Complies with security rule (aggregate query)
-let res = await db.collection('collection_a').aggregate().match({
-    age: _.gt(10)
+// Complies with security rule (aggregate query)
+let res = await db.collection('test').aggregate().match({
+    age: _.gt(10)  // Matches the rule exactly
 }).project({
     age: 1
 }).end()
 
-// ❌ Does not comply with security rule (aggregate query)
-let res = await db.collection('collection_a').aggregate().match({
-    age: _.gt(8)
+// Does not comply with security rule (aggregate query)
+let res = await db.collection('test').aggregate().match({
+    age: _.gt(8)  // Not a subset of age > 10
 }).project({
     age: 1
 }).end()
+```
+
+**Create Operation Example:**
+
+```javascript
+// Security rule configuration
+{
+    "create": "auth.uid != null && request.data.userId == auth.uid"
+}
+
+// Complies with security rule
+// Written data includes userId matching current user's uid
+// Note: _openid is automatically added by SDK, do not include it
+await db.collection('userPosts').add({
+    userId: currentUser.uid,  // Matches auth.uid
+    title: "My Post",
+    content: "Post content"
+    // _openid is automatically populated by SDK based on authenticated user
+})
+
+// Does not comply with security rule
+// Written data has userId that doesn't match current user's uid
+await db.collection('userPosts').add({
+    userId: "other-user-id",  // Does not match auth.uid
+    title: "My Post",
+    content: "Post content"
+})
+
+// Also wrong: Cannot manually set _openid
+await db.collection('userPosts').add({
+    userId: currentUser.uid,
+    _openid: "some-id",  // ERROR: Cannot manually set _openid
+    title: "My Post"
+})
 ```
 
 ### Template Variables for Automatic Replacement
@@ -495,7 +584,7 @@ In query conditions, if the key is `_openid` and the value is `{openid}`, or if 
 
 ### Document ID Query Transformation (Migration Required)
 
-**⚠️ Important:** Security rules require query conditions to be a subset of the rules (all restrictions on `doc` must appear in query conditions and query condition restrictions must be a subset of rule restrictions). This differs from the implicit default behavior of old permission configurations, so developers need to pay attention to the following upgrade/compatibility handling.
+**Important:** Security rules require query conditions to be a subset of the rules (all restrictions on `doc` must appear in query conditions and query condition restrictions must be a subset of rule restrictions). This differs from the implicit default behavior of old permission configurations, so developers need to pay attention to the following upgrade/compatibility handling.
 
 **Why Transformation is Needed:**
 
@@ -516,10 +605,10 @@ Since `doc()` operations (doc.get, doc.set, etc.) only specify `_id`, their quer
 
 // Document with id='ccc' has data: { age: 12, _openid: 'user123' }
 
-// ❌ Does not comply with security rules (does not meet subset requirement)
+// Does not comply with security rules (does not meet subset requirement)
 let queryRes = db.collection('collection_a').doc('ccc').get()
 
-// ✅ Complies with security rules (rewritten as where query)
+// Complies with security rules (rewritten as where query)
 let queryRes = db.collection('collection_a')
     .where({
         _id: "ccc", 
