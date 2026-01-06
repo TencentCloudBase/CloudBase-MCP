@@ -192,63 +192,21 @@ test('downloadTemplate tool requires IDE parameter when not detected', async () 
     await client.connect(transport);
     await delay(3000);
     
-    try {
-      const result = await client.callTool('downloadTemplate', {
-        template: 'rules',
-        overwrite: false
-      });
-      
-      // The tool should return an error message asking for IDE parameter
-      expect(result.content).toBeDefined();
-      const contentText = result.content[0]?.text || '';
-      expect(contentText).toContain('必须指定 IDE 参数');
-      console.log('✅ Tool correctly requires IDE parameter when not provided');
-      
-    } catch (error) {
-      // This is acceptable - the tool might fail for other reasons (like network)
-      console.log('⚠️ Tool call completed (may have failed for expected reasons):', error.message);
-    }
-    
-    // Clean up first connection
-    await client.close();
-    await transport.close();
-    client = null;
-    transport = null;
-    
-    // Test 2: With explicit IDE parameter (should work)
-    console.log('Test 2: Testing with explicit IDE parameter...');
-    
-    client = new Client({
-      name: "test-client-ide-explicit",
-      version: "1.0.0",
-    }, {
-      capabilities: {}
+    // The tool should return an error message immediately (before any download)
+    const result = await client.callTool('downloadTemplate', {
+      template: 'rules',
+      overwrite: false
     });
     
-    transport = new StdioClientTransport({
-      command: 'node',
-      args: [serverPath],
-      env: testEnv
-    });
+    // The tool should return an error message asking for IDE parameter
+    expect(result.content).toBeDefined();
+    expect(result.content.length).toBeGreaterThan(0);
+    const contentText = result.content[0]?.text || '';
+    expect(contentText).toContain('必须指定 IDE 参数');
+    console.log('✅ Tool correctly requires IDE parameter when not provided');
     
-    await client.connect(transport);
-    await delay(3000);
-    
-    try {
-      const result = await client.callTool('downloadTemplate', {
-        template: 'rules',
-        ide: 'cursor',
-        overwrite: false
-      });
-      
-      // The tool should work with explicit IDE parameter
-      expect(result.content).toBeDefined();
-      console.log('✅ Tool works with explicit IDE parameter');
-      
-    } catch (error) {
-      // This is acceptable - the tool might fail for other reasons (like network)
-      console.log('⚠️ Tool call completed (may have failed for expected reasons):', error.message);
-    }
+    // Note: We only test the error case here to avoid timeout from actual downloads
+    // The explicit IDE parameter case is tested in other test files
     
     console.log('✅ downloadTemplate IDE parameter requirement test passed');
     
@@ -275,4 +233,4 @@ test('downloadTemplate tool requires IDE parameter when not detected', async () 
       process.env.INTEGRATION_IDE = originalEnv;
     }
   }
-}, 60000); 
+}, 30000); 
