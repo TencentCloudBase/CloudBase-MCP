@@ -16,10 +16,10 @@ Web frontend authentication with `@cloudbase/js-sdk@2.24.0+`, Compatible with `s
 import cloudbase from '@cloudbase/js-sdk'
 
 const app = cloudbase.init({
-  env: 'your-env-id',
-  region: 'ap-shanghai',
-  accessKey: 'your-access-key', // optional
-  auth: { detectSessionInUrl: true }, // Auto-detect OAuth callback
+  env: `env`,
+  region: `region`,  // default 'ap-shanghai'
+  accessKey: 'publishable key', // rquired，get publishable key from auth-tool-cloudbase('Get Publishable Key')
+  auth: { detectSessionInUrl: true },
 })
 
 const auth = app.auth
