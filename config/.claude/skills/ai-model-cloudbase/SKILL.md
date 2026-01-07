@@ -13,7 +13,7 @@ Use this skill for **calling AI models using CloudBase** across all platforms.
 | Platform | SDK/API | Section |
 |----------|---------|---------|
 | Web (Browser) | `@cloudbase/js-sdk` | Part 1 |
-| Node.js (Server/Cloud Functions) | `@cloudbase/node-sdk` | Part 1 (same API, different init) |
+| Node.js (Server/Cloud Functions) | `@cloudbase/node-sdk` ≥3.16.0 | Part 1 (same API, different init) |
 | Any platform (HTTP) | HTTP API / OpenAI SDK | Part 2 |
 | WeChat Mini Program | `wx.cloud.extend.AI` | Part 3 ⚠️ Different API |
 
@@ -38,9 +38,11 @@ Use this skill for **calling AI models using CloudBase** across all platforms.
 # For Web (Browser)
 npm install @cloudbase/js-sdk
 
-# For Node.js (Server/Cloud Functions) - Requires v3.16.0+
+# For Node.js (Server/Cloud Functions)
 npm install @cloudbase/node-sdk
 ```
+
+⚠️ **Node SDK AI feature requires version 3.16.0 or above.** Check your version with `npm list @cloudbase/node-sdk`.
 
 ## Initialization - Web (JS SDK)
 
@@ -113,7 +115,10 @@ const usage = await res.usage;        // Token usage
 
 ## generateImage() - Image Generation
 
+⚠️ **Image generation is currently only available in Node SDK**, not in JS SDK (Web) or WeChat Mini Program.
+
 ```js
+// Node SDK only
 const imageModel = ai.createImageModel("hunyuan-image");
 
 const res = await imageModel.generateImage({
@@ -263,7 +268,7 @@ for await (let event of res.eventStream) {
 | **streamText params** | Direct object | ⚠️ Wrapped in `data: {...}` |
 | **streamText return** | `{ textStream, dataStream }` | `{ textStream, eventStream }` |
 | **Callbacks** | Not supported | `onText`, `onEvent`, `onFinish` |
-| **Image generation** | `ai.createImageModel()` | Not available |
+| **Image generation** | Node SDK only | Not available |
 
 ---
 
