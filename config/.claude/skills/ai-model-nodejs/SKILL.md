@@ -1,6 +1,6 @@
 ---
 name: ai-model-nodejs
-description: Guide for calling AI models with CloudBase Node SDK (@cloudbase/node-sdk ≥3.16.0) - text generation, streaming, and image generation in server/cloud functions.
+description: Use this skill when developing Node.js backend services or CloudBase cloud functions (Express/Koa/NestJS, serverless, backend APIs) that need AI capabilities. Features text generation (generateText), streaming (streamText), AND image generation (generateImage) via @cloudbase/node-sdk ≥3.16.0. Built-in models include Hunyuan (hunyuan-2.0-instruct-20251111 recommended), DeepSeek (deepseek-v3.2 recommended), and hunyuan-image for images. This is the ONLY SDK that supports image generation. NOT for browser/Web apps (use ai-model-web) or WeChat Mini Program (use ai-model-wechat).
 alwaysApply: false
 ---
 

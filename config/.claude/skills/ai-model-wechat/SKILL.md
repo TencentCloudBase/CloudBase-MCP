@@ -1,6 +1,6 @@
 ---
 name: ai-model-wechat
-description: Guide for calling AI models in WeChat Mini Program using wx.cloud.extend.AI - text generation and streaming with callback support.
+description: Use this skill when developing WeChat Mini Programs (小程序, 企业微信小程序, wx.cloud-based apps) that need AI capabilities. Features text generation (generateText) and streaming (streamText) with callback support (onText, onEvent, onFinish) via wx.cloud.extend.AI. Built-in models include Hunyuan (hunyuan-2.0-instruct-20251111 recommended) and DeepSeek (deepseek-v3.2 recommended). API differs from JS/Node SDK - streamText requires data wrapper, generateText returns raw response. NOT for browser/Web apps (use ai-model-web), Node.js backend (use ai-model-nodejs), or image generation (not supported).
 alwaysApply: false
 ---
 
@@ -193,4 +193,3 @@ interface WxGenerateTextResponse {
 3. **Check for [DONE]** - When using `eventStream`, check `event.data === "[DONE]"` to stop
 4. **Handle errors gracefully** - Wrap AI calls in try/catch
 5. **Remember the `data` wrapper** - streamText params must be wrapped in `data: {...}`
-
