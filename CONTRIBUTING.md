@@ -105,6 +105,61 @@ npm run changelog
 2. 提供详细的问题描述和复现步骤
 3. 如果可能，提供相关的代码示例
 
+## GitHub Actions Workflows
+
+项目提供了两个 GitHub Actions workflow 用于自动化配置同步和构建：
+
+### Build Example Zips
+
+**Workflow**: `.github/workflows/build-zips.yml`
+
+用于同步配置到 cloudbase-examples 仓库并构建 zip 文件。
+
+**使用场景**：
+- 需要构建示例模板的 zip 文件
+- 需要将构建产物发布为 artifact 供内网系统拉取
+
+**参数**：
+- `source_branch`: 源分支（本仓库的分支，默认：main）
+- `target_branch`: 目标分支（cloudbase-examples 的分支，默认：master）
+- `build_zips`: 是否构建 zip 文件（默认：true）
+- `commit_changes`: 是否提交更改到 cloudbase-examples（默认：false）
+
+**使用方法**：
+1. 在 GitHub 仓库的 Actions 页面选择 "Build Example Zips"
+2. 点击 "Run workflow"
+3. 填写参数（可选）
+4. 点击 "Run workflow" 按钮
+
+**输出**：
+- 如果 `build_zips` 为 true，会在 Actions 页面生成 artifact `cloudbase-examples-zips`，保留 30 天
+
+### Sync Branch to Examples
+
+**Workflow**: `.github/workflows/sync-branch.yml`
+
+仅用于将本仓库的指定分支同步到 cloudbase-examples 的指定分支，不构建 zip 文件。
+
+**使用场景**：
+- 需要将某个分支的配置同步到 cloudbase-examples 的对应分支
+- 不需要构建 zip 文件
+
+**参数**：
+- `source_branch`: 源分支（本仓库的分支，必填）
+- `target_branch`: 目标分支（cloudbase-examples 的分支，必填）
+- `commit_changes`: 是否提交更改到 cloudbase-examples（默认：true）
+
+**使用方法**：
+1. 在 GitHub 仓库的 Actions 页面选择 "Sync Branch to Examples"
+2. 点击 "Run workflow"
+3. 填写必填参数：`source_branch` 和 `target_branch`
+4. 选择是否提交更改
+5. 点击 "Run workflow" 按钮
+
+**注意事项**：
+- 由于两个仓库在同一组织下，使用默认的 `GITHUB_TOKEN` 即可访问
+- 如果目标分支不存在，workflow 会自动创建
+
 ## 行为准则
 
 - 尊重所有贡献者

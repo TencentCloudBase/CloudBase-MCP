@@ -1,5 +1,36 @@
 #!/usr/bin/env node
 
+/**
+ * 配置同步脚本 - sync-config.mjs
+ * 
+ * 功能说明：
+ * 将当前项目的 config 目录下的配置文件和规则同步到 cloudbase-examples 仓库中的各个模板项目。
+ * 主要用于保持示例模板项目与主项目配置的一致性。
+ * 
+ * 主要用途：
+ * - 同步 AI IDE 配置文件（如 .mcp.json、CLAUDE.md、CODEBUDDY.md 等）
+ * - 同步规则文件（rules 目录）
+ * - 同步其他配置文件到各个模板项目
+ * 
+ * 工作流程：
+ * 1. 读取 scripts/template-config.json 获取模板列表
+ * 2. 遍历每个模板，将 config 目录内容复制到对应模板目录
+ * 3. 根据配置决定是否执行 Git 提交和推送操作
+ * 
+ * 使用方式：
+ *   node scripts/sync-config.mjs                     # 同步所有模板
+ *   node scripts/sync-config.mjs --dry-run           # 干运行模式（预览）
+ *   node scripts/sync-config.mjs --filter web        # 只同步包含"web"的模板
+ *   node scripts/sync-config.mjs --skip-git          # 跳过Git操作
+ *   node scripts/sync-config.mjs --backup            # 创建备份
+ * 
+ * 配置文件：
+ *   scripts/template-config.json - 定义要同步的模板列表和配置选项
+ * 
+ * 目标目录：
+ *   ../cloudbase-examples/{template-path}/ - 各个模板项目的路径
+ */
+
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -12,6 +43,17 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 const configDir = path.join(projectRoot, 'config');
 const templateConfigPath = path.join(__dirname, 'template-config.json');
+
+// 获取 cloudbase-examples 路径（支持环境变量，用于 CI 环境）
+const getCloudbaseExamplesPath = () => {
+  const envPath = process.env.CLOUDBASE_EXAMPLES_PATH;
+  if (envPath) {
+    // 如果是相对路径，相对于项目根目录；如果是绝对路径，直接使用
+    return path.isAbsolute(envPath) ? envPath : path.resolve(projectRoot, envPath);
+  }
+  // 默认路径：项目根目录的上级目录下的 cloudbase-examples
+  return path.join(projectRoot, '..', 'cloudbase-examples');
+};
 
 // 读取模板配置
 let templateConfig;
@@ -278,7 +320,8 @@ async function syncConfigs(options = {}) {
       console.log(`  📁 包含模式: ${includePatterns.join(', ')}`);
     }
     
-    const targetDir = path.join(projectRoot, '..', 'cloudbase-examples', templatePath);
+    const cloudbaseExamplesPath = getCloudbaseExamplesPath();
+    const targetDir = path.join(cloudbaseExamplesPath, templatePath);
     
     // 自动创建目标目录的父目录
     const targetParentDir = path.dirname(targetDir);
@@ -362,7 +405,7 @@ async function syncConfigs(options = {}) {
 async function handleGitOperations() {
   console.log('\n🔄 开始Git操作...');
   
-  const examplesDir = path.join(projectRoot, '..', 'cloudbase-examples');
+  const examplesDir = getCloudbaseExamplesPath();
   
   if (!fs.existsSync(examplesDir)) {
     console.log('⚠️  cloudbase-examples 目录不存在，跳过Git操作');

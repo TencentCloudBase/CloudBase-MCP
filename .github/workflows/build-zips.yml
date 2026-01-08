@@ -1,0 +1,74 @@
+name: Build Example Zips
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: 'Source branch (this repo)'
+        required: false
+        default: 'main'
+      target_branch:
+        description: 'Target branch (cloudbase-examples)'
+        required: false
+        default: 'master'
+      build_zips:
+        description: 'Build zip files'
+        type: boolean
+        default: true
+      commit_changes:
+        description: 'Commit changes to cloudbase-examples'
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.source_branch || 'main' }}
+      
+      - name: Checkout cloudbase-examples
+        uses: actions/checkout@v4
+        with:
+          repository: TencentCloudBase/awsome-cloudbase-examples
+          ref: ${{ github.event.inputs.target_branch || 'master' }}
+          path: cloudbase-examples
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Sync config to examples
+        run: node scripts/sync-config.mjs --skip-git
+        env:
+          CLOUDBASE_EXAMPLES_PATH: cloudbase-examples
+      
+      - name: Build zips
+        if: github.event.inputs.build_zips == 'true'
+        working-directory: cloudbase-examples
+        run: |
+          rm -rf dist
+          node scripts/build-zips.js
+      
+      - name: Upload artifact
+        if: github.event.inputs.build_zips == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudbase-examples-zips
+          path: cloudbase-examples/dist
+          retention-days: 30
+      
+      - name: Commit and push changes
+        if: github.event.inputs.commit_changes == 'true'
+        working-directory: cloudbase-examples
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: sync config from ${{ github.event.inputs.source_branch || 'main' }}"
+          git push origin ${{ github.event.inputs.target_branch || 'master' }}
