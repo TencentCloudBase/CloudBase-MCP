@@ -43,10 +43,26 @@ jobs:
         with:
           node-version: '22'
       
+      - name: Check git status before sync
+        working-directory: cloudbase-examples
+        run: |
+          echo "=== Git status before sync ==="
+          git status --short || true
+      
       - name: Sync config to examples
         run: node scripts/sync-config.mjs --skip-git
         env:
           CLOUDBASE_EXAMPLES_PATH: cloudbase-examples
+      
+      - name: Check git status after sync
+        working-directory: cloudbase-examples
+        run: |
+          echo "=== Git status after sync ==="
+          git status --short
+          echo "=== Files changed ==="
+          git diff --name-only || echo "No changes detected"
+          echo "=== Staged files ==="
+          git diff --staged --name-only || echo "No staged files"
       
       - name: Build zips
         if: github.event.inputs.build_zips == 'true'
@@ -70,5 +86,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "chore: sync config from ${{ github.event.inputs.source_branch || 'main' }}"
-          git push origin ${{ github.event.inputs.target_branch || 'master' }}
+          if git diff --staged --quiet; then
+            echo "No changes to commit, skipping commit and push"
+          else
+            git commit -m "chore: sync config from ${{ github.event.inputs.source_branch || 'main' }}"
+            git push origin ${{ github.event.inputs.target_branch || 'master' }}
+          fi
