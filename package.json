@@ -10,7 +10,7 @@
     "release:rc": "standard-version --prerelease rc",
     "check:readme-sync": "node scripts/check-readme-sync.js",
     "build:mcp": "cd mcp && npm run build && cd ..",
-    "build": "npm run build:mcp && npm run build:tools-json && npm run build:tools-doc && npm run build:prompts-data && npm run build:rules-sync && npm run sync:config",
+    "build": "npm run build:mcp && npm run build:tools-json && npm run build:tools-doc && npm run build:prompts-data && npm run build:rules-sync",
     "build:tools-json": "cd mcp && npm run build && cd .. && node scripts/generate-tools-json.mjs",
     "build:tools-doc": "node scripts/generate-tools-doc.mjs",
     "build:prompts-data": "node scripts/generate-prompts-data.mjs && node scripts/generate-prompts.mjs",
