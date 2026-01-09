@@ -364,26 +364,6 @@ CodeBuddy 已内置 CloudBase MCP，无需配置即可使用。
 - [插件系统](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/plugins)
 - [常见问题](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/faq)
 
-### 教程
-
-#### 文章
-- [用 CloudBase AI CLI 开发邻里闲置物品循环利用小程序](https://docs.cloudbase.net/practices/ai-cli-mini-program)
-- [使用 CodeBuddy IDE + CloudBase 一站式开发卡片翻翻翻游戏](https://mp.weixin.qq.com/s/2EM3RBzdQUCdfld2CglWgg)
-- [1小时开发微信小游戏《我的早餐店》](https://cloud.tencent.com/developer/article/2532595)
-- [更多教程...](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/tutorials)
-
-#### 视频
-- [云开发CloudBase：用AI开发一款分手厨房小游戏](https://www.bilibili.com/video/BV1v5KAzwEf9/)
-- [软件3.0：AI 编程新时代的最佳拍档](https://www.bilibili.com/video/BV15gKdz1E5N/)
-- [更多视频...](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/tutorials)
-
-### 项目案例
-
-- [五子棋联机游戏](https://github.com/TencentCloudBase/awesome-cloudbase-examples/tree/master/web/gomoku-game)
-- [分手厨房联机游戏](https://github.com/TencentCloudBase/awesome-cloudbase-examples/tree/master/web/overcooked-game)
-- [电商管理后台](https://github.com/TencentCloudBase/awesome-cloudbase-examples/tree/master/web/ecommerce-management-backend)
-- [更多案例...](https://github.com/TencentCloudBase/awesome-cloudbase-examples)
-
 ## 💬 社区
 
 ### 微信交流群
