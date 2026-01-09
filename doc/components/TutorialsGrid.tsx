@@ -25,6 +25,17 @@ const TERMINAL_ORDER = ['小程序', 'Web', '小游戏', '原生应用'];
 const tutorials: Tutorial[] = [
   // 文章
   {
+    id: 'article-codebuddy-cloudbase-health-checkin-web-app',
+    title: '0 基础也能学会！用 CodeBuddy + CloudBase 开发健康打卡 Web 应用（完整教程）',
+    description: '腾讯云代码助手CodeBuddy',
+    category: '文章',
+    url: 'https://mp.weixin.qq.com/s/vlav-rPTqO1jB5AYpcOS_A',
+    type: 'article',
+    terminalTags: ['Web'],
+    appTypeTags: ['工具/效率'],
+    devToolTags: ['CodeBuddy'],
+  },
+  {
     id: 'article-yuandan-xinnian-xingyunqian',
     title: '元旦快乐！手把手教你0代码手搓新年幸运签（附保姆级教程）',
     description: '鹅厂技术派',
