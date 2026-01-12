@@ -11,9 +11,12 @@ categories:
   - id: frontend
     label: 应用集成
     order: 4
+  - id: ai
+    label: AI
+    order: 5
   - id: tools
     label: 开发工具
-    order: 5
+    order: 6
 
 rules:
   
@@ -178,4 +181,34 @@ rules:
       - "创建一个完整的 CloudBase 应用架构，包含云函数、数据库、存储等组件"
       - "介绍 CloudBase 云函数的使用场景和最佳实践"
       - "介绍小程序云开发的核心概念和使用方法"
+  
+  - id: ai-model-web
+    title: 在 Web 应用中集成 AI 功能
+    description: 在浏览器/Web 应用中使用 CloudBase AI 模型，支持文本生成和流式响应
+    category: ai
+    order: 1
+    prompts:
+      - "在 React Web 应用中集成 CloudBase AI 模型，实现文本生成功能"
+      - "创建一个使用 CloudBase AI 模型的聊天界面，支持流式响应"
+      - "在 Vue 应用中使用 CloudBase AI 调用混元模型生成内容"
+  
+  - id: ai-model-nodejs
+    title: 在 Node.js 后端中集成 AI 功能
+    description: 在 Node.js 后端服务或云函数中使用 CloudBase AI 模型，支持文本生成、流式响应和图片生成
+    category: ai
+    order: 2
+    prompts:
+      - "在 CloudBase 云函数中集成 AI 模型，实现文本生成功能"
+      - "创建一个使用 CloudBase AI 模型生成图片的云函数"
+      - "在 Express 后端服务中使用 CloudBase AI 模型处理用户请求"
+  
+  - id: ai-model-wechat
+    title: 在微信小程序中集成 AI 功能
+    description: 在微信小程序中使用 CloudBase AI 模型，支持文本生成和流式响应
+    category: ai
+    order: 3
+    prompts:
+      - "在微信小程序中集成 CloudBase AI 模型，实现智能对话功能"
+      - "创建一个使用 CloudBase AI 模型的小程序应用，支持流式响应"
+      - "在小程序中使用混元模型生成内容并展示给用户"
 

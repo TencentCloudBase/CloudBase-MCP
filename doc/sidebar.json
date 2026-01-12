@@ -110,6 +110,17 @@
           },
           {
             "type": "category",
+            "label": "AI",
+            "collapsible": true,
+            "collapsed": true,
+            "items": [
+              "ai/cloudbase-ai-toolkit/prompts/ai-model-web",
+              "ai/cloudbase-ai-toolkit/prompts/ai-model-nodejs",
+              "ai/cloudbase-ai-toolkit/prompts/ai-model-wechat"
+            ]
+          },
+          {
+            "type": "category",
             "label": "开发工具",
             "collapsible": true,
             "collapsed": true,

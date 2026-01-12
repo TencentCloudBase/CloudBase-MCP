@@ -25,6 +25,16 @@ const TERMINAL_ORDER = ['小程序', 'Web', '小游戏', '原生应用'];
 const tutorials: Tutorial[] = [
   // 文章
   {
+    id: 'article-wechat-miniprogram-ai-growth-plan-tutorial',
+    title: '微信小程序AI成长计划：免费云开发资源与混元Token，手把手教你开发一个 AI 小程序',
+    description: '鹅厂技术派',
+    category: '文章',
+    url: 'https://mp.weixin.qq.com/s/eB0x7Jc1lKP13dBMY9wsgw',
+    type: 'article',
+    terminalTags: ['小程序'],
+    appTypeTags: ['工具/效率'],
+  },
+  {
     id: 'article-codebuddy-cloudbase-health-checkin-web-app',
     title: '0 基础也能学会！用 CodeBuddy + CloudBase 开发健康打卡 Web 应用（完整教程）',
     description: '腾讯云代码助手CodeBuddy',
@@ -82,7 +92,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'meeting-room-system',
     title: '低代码？不！是高效代码：CodeBuddy IDE + CloudBase 开发会议室系统实战',
-    description: '会议室系统开发实战',
+    description: '六月的雨在Tencent',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2593378',
     type: 'article',
@@ -93,7 +103,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'ai-game-paradigm',
     title: 'CloudBase + AI 游戏开发新范式，3小时极速开发',
-    description: '游戏开发新范式探索',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2575573',
     type: 'article',
@@ -104,7 +114,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'anime-tracker',
     title: '追番新姿势： 美少女程序员用CloudBase+CodeBuddy 8分钟手搓追番神器！！！',
-    description: '追番工具开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2574377',
     type: 'article',
@@ -115,7 +125,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'zero-code-miniprogram',
     title: '从没写过代码的小白，也能用 CodeBuddy + CloudBase 打造商业小程序！',
-    description: '零基础小程序开发',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2571757',
     type: 'article',
@@ -126,7 +136,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'claude-code-figma',
     title: '手把手教你用 Claude Code + CloudBase + Figma 完成商业小程序全栈开发',
-    description: '全栈开发实战',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2547137',
     type: 'article',
@@ -137,7 +147,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'anonymous-social-app',
     title: '手把手带你用AI 2天撸出6端匿名社交App！',
-    description: '多端应用开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2549936',
     type: 'article',
@@ -145,7 +155,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'finance-assistant',
     title: '腾讯云CodeBuddy AI IDE+CloudBase AI ToolKit打造理财小助手网页',
-    description: '理财助手开发实战',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2551403',
     type: 'article',
@@ -153,7 +163,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'animal-match-game',
     title: '基于CloudBase AI Toolkit十首歌的时间开发《动物连连看》微信小游戏',
-    description: '小游戏快速开发',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2544009',
     type: 'article',
@@ -161,7 +171,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'gomoku-online',
     title: 'CodeBuddy IDE + 云开发CloudBase 实现五子棋在线小游戏',
-    description: '在线小游戏开发',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2547526',
     type: 'article',
@@ -169,7 +179,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'sleep-assistant',
     title: '基于CloudBase AI Toolkit + Vue Web轻松构建智能睡眠助手网站',
-    description: '智能睡眠助手开发',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2538039',
     type: 'article',
@@ -181,7 +191,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'english-learning-h5',
     title: 'CloudBase AI ToolKit编程实战，无痛开发刷视频学英语h5应用',
-    description: 'H5应用开发实战',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2538050',
     type: 'article',
@@ -192,7 +202,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'fps-game',
     title: 'AI编程实战：云开发疯狂助攻，React + Vite 做出 FPS 网页游戏不是梦',
-    description: 'FPS游戏开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2537874',
     type: 'article',
@@ -204,7 +214,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'h5-shooting-game',
     title: '从Prompt到上线：CloudBase AI Toolkit 3步打造H5射击小游戏新体验',
-    description: 'H5游戏开发实战',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2536222',
     type: 'article',
@@ -215,7 +225,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'art-gallery-h5',
     title: '极速开发实践！AI助你打造专属时空艺术馆H5，小白也能变策展人！',
-    description: 'H5应用开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2535206',
     type: 'article',
@@ -223,7 +233,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'calendar-memo',
     title: 'CloudBase AI Toolkit给我做了一个H5日历备忘录，终于不靠记性生活了',
-    description: 'H5工具开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2536280',
     type: 'article',
@@ -231,7 +241,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'ai-cli-miniprogram',
     title: '用 CloudBase AI CLI 开发邻里闲置物品循环利用小程序',
-    description: '详细案例教程，展示如何使用 CloudBase AI CLI 从零开始开发完整的小程序项目',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://docs.cloudbase.net/practices/ai-cli-mini-program',
     type: 'article',
@@ -239,7 +249,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'codebuddy-card-game',
     title: '使用 CodeBuddy IDE + CloudBase 一站式开发卡片翻翻翻游戏',
-    description: '全栈 Web 应用开发实战',
+    description: '全栈若城',
     category: '文章',
     url: 'https://mp.weixin.qq.com/s/2EM3RBzdQUCdfld2CglWgg',
     type: 'article',
@@ -247,7 +257,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'breakfast-shop',
     title: '1小时开发微信小游戏《我的早餐店》',
-    description: '基于 CloudBase AI Toolkit',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2532595',
     type: 'article',
@@ -258,7 +268,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'cursor-game',
     title: 'AI Coding宝藏组合：Cursor + Cloudbase-AI-Toolkit 开发游戏实战',
-    description: '游戏开发实战案例',
+    description: 'Cheishire_Cat',
     category: '文章',
     url: 'https://juejin.cn/post/7518783423277695028#comment',
     type: 'article',
@@ -266,7 +276,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'overcooked-game',
     title: '2天上线一款可联机的分手厨房小游戏',
-    description: '联机游戏开发案例',
+    description: 'Cheishire_Cat',
     category: '文章',
     url: 'https://mp.weixin.qq.com/s/nKfhHUf8w-EVKvA0u1rdeg',
     type: 'article',
@@ -274,7 +284,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'cloud-deploy',
     title: '没有服务器，怎么云化部署前后端项目',
-    description: '云化部署实战',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2537971',
     type: 'article',
@@ -285,7 +295,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'business-card',
     title: '快速打造程序员专属名片网站',
-    description: '个人名片网站开发',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2536273',
     type: 'article',
@@ -296,7 +306,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'hot-words-miniprogram',
     title: '我用「CloudBase AI ToolKit」一天做出"网络热词"小程序',
-    description: '小程序开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2537907',
     type: 'article',
@@ -307,7 +317,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'cloud-library',
     title: '用AI打造你的专属"云书房"小程序！',
-    description: '小程序开发实战',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2535789',
     type: 'article',
@@ -318,7 +328,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'resume-miniprogram',
     title: '一人挑战全栈研发简历制作小程序',
-    description: '全栈开发案例',
+    description: 'CloudBase',
     category: '文章',
     url: 'https://cloud.tencent.com/developer/article/2535894',
     type: 'article',
@@ -329,7 +339,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'worry-box',
     title: '我用AI开发并上线了一款小程序：解忧百宝盒',
-    description: '小程序上线案例',
+    description: 'TechInfQ',
     category: '文章',
     url: 'https://mp.weixin.qq.com/s/DYekRheNQ2u8LAl_F830fA',
     type: 'article',
@@ -340,7 +350,7 @@ const tutorials: Tutorial[] = [
   {
     id: 'figma-cursor-cloudbase',
     title: 'AI时代，从零基础到全栈开发者之路',
-    description: 'Figma + Cursor + Cloudbase 快速搭建微信小程序',
+    description: '洞穴之外 1.0',
     category: '文章',
     url: 'https://mp.weixin.qq.com/s/nT2JsKnwBiup1imniCr2jA',
     type: 'article',
