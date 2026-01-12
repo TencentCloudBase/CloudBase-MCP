@@ -1,6 +1,6 @@
 ---
 name: auth-tool-cloudbase
-description: Use CloudBase Auth tool to configure and manage authentication providers for web applications - enable/disable login methods (SMS, Email, WeChat Open Platform, Google, Anonymous, Username/password, OAuth, SAML, CAS, Dingding, etc.) and configure provider settings via MCP tools.
+description: Use CloudBase Auth tool to configure and manage authentication providers for web applications - enable/disable login methods (SMS, Email, WeChat Open Platform, Google, Anonymous, Username/password, OAuth, SAML, CAS, Dingding, etc.) and configure provider settings via MCP tools `callCloudApi`.
 alwaysApply: false
 ---
 
@@ -220,3 +220,25 @@ Save `result.Data.StaticDomain` as `staticDomain`.
     "action": "ModifyProvider"
 }
 ```
+
+### 8. Get Publishable Key
+
+**Query existing key**:
+```js
+{
+    "params": { "EnvId": `env`, "KeyType": "publish_key", "PageNumber": 1, "PageSize": 10 },
+    "service": "lowcode",
+    "action": "DescribeApiKeyTokens"
+}
+```
+Return `PublishableKey.ApiKey` if exists (filter by `Name == "publish_key"`).
+
+**Create new key** (if not exists):
+```js
+{
+    "params": { "EnvId": `env`, "KeyType": "publish_key", "KeyName": "publish_key" },
+    "service": "lowcode",
+    "action": "CreateApiKeyToken"
+}
+```
+If creation fails, direct user to: "https://tcb.cloud.tencent.com/dev?envId=`env`#/env/apikey"
