@@ -56,7 +56,7 @@
       },
       {
         "type": "category",
-        "label": "AI 提示词",
+        "label": "AI Skill",
         "collapsible": true,
         "collapsed": true,
         "items": [

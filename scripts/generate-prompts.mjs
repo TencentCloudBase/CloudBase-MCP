@@ -224,7 +224,7 @@ function updateSidebar(config) {
   const promptsCategoryItems = [howToUseItem, ...categoryItems];
   const promptsCategory = {
     type: 'category',
-    label: 'AI 提示词',
+    label: 'AI Skill',
     collapsible: true,
     collapsed: true,
     items: promptsCategoryItems
@@ -232,7 +232,7 @@ function updateSidebar(config) {
   
   // Find or update prompts category
   let promptsCategoryIndex = mainCategory.items.findIndex(
-    item => item.type === 'category' && (item.label === '提示词' || item.label === 'AI 提示词')
+    item => item.type === 'category' && (item.label === '提示词' || item.label === 'AI 提示词' || item.label === 'AI Skill')
   );
   
   if (promptsCategoryIndex >= 0) {
