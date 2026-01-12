@@ -35,6 +35,7 @@ function generatePromptsData() {
     id: rule.id,
     title: rule.title,
     description: rule.description,
+    shortDescription: rule.shortDescription || rule.description, // Fallback to description if shortDescription not provided
     category: rule.category,
     order: rule.order,
     prompts: rule.prompts || []

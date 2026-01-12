@@ -1,184 +1,94 @@
 import Link from '@docusaurus/Link';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './PromptScenarios.module.css';
+import promptsData from './prompts.json';
 
-interface Scenario {
+interface PromptItem {
   id: string;
   title: string;
   description: string;
+  shortDescription?: string;
   category: string;
-  docUrl: string;
+  order: number;
+  prompts: string[];
 }
 
-const scenarios: Scenario[] = [
-  // 身份认证
-  {
-    id: 'auth-tool',
-    title: '身份认证：配置管理',
-    description: '配置和管理 CloudBase 认证提供商，启用/禁用登录方式',
-    category: '身份认证',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/auth-tool',
-  },
-  {
-    id: 'auth-web',
-    title: '身份认证：Web',
-    description: 'Web SDK 身份认证',
-    category: '身份认证',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/auth-web',
-  },
-  {
-    id: 'auth-wechat',
-    title: '身份认证：微信小程序',
-    description: '微信小程序身份认证',
-    category: '身份认证',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/auth-wechat',
-  },
-  {
-    id: 'auth-http-api',
-    title: '身份认证：App',
-    description: 'Android、iOS 原生应用',
-    category: '身份认证',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/auth-http-api',
-  },
-  // 数据库
-  {
-    id: 'no-sql-web-sdk',
-    title: '文档数据库：Web',
-    description: 'Web SDK 文档数据库',
-    category: '数据库',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/no-sql-web-sdk',
-  },
-  {
-    id: 'no-sql-wx-mp-sdk',
-    title: '文档数据库：小程序',
-    description: '小程序 SDK 文档数据库',
-    category: '数据库',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/no-sql-wx-mp-sdk',
-  },
-  {
-    id: 'relational-database-tool',
-    title: '关系型数据库：工具与规则',
-    description: 'MySQL 关系型数据库',
-    category: '数据库',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/relational-database-tool',
-  },
-  {
-    id: 'relational-database-web',
-    title: '关系型数据库：Web SDK',
-    description: 'Web 应用中使用关系型数据库',
-    category: '数据库',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/relational-database-web',
-  },
-  {
-    id: 'database-http-api',
-    title: '数据库：App',
-    description: 'Android、iOS 原生应用',
-    category: '数据库',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/database-http-api',
-  },
-  // 后端开发
-  {
-    id: 'cloud-functions',
-    title: '后端开发：云函数',
-    description: '开发和部署 Node.js 云函数',
-    category: '后端开发',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/cloud-functions',
-  },
-  {
-    id: 'cloudrun-development',
-    title: '后端开发：云托管',
-    description: 'Node.js、Python、Go、Java 等',
-    category: '后端开发',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/cloudrun-development',
-  },
-  // 应用集成
-  {
-    id: 'web-development',
-    title: 'Web 开发',
-    description: 'React、Vue、Next.js',
-    category: '应用集成',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/web-development',
-  },
-  {
-    id: 'miniprogram-development',
-    title: '微信小程序',
-    description: '小程序开发与集成',
-    category: '应用集成',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/miniprogram-development',
-  },
-  {
-    id: 'ui-design',
-    title: 'UI 设计',
-    description: '专业界面设计指南',
-    category: '应用集成',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/ui-design',
-  },
-  {
-    id: 'http-api',
-    title: 'App 集成',
-    description: 'Android、iOS 原生应用',
-    category: '应用集成',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/http-api',
-  },
-  // 开发工具
-  {
-    id: 'spec-workflow',
-    title: 'Spec 工作流',
-    description: '需求分析、技术设计、任务规划',
-    category: '开发工具',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/spec-workflow',
-  },
-  {
-    id: 'cloudbase-platform',
-    title: 'CloudBase 平台',
-    description: '平台知识库和最佳实践',
-    category: '开发工具',
-    docUrl: '/ai/cloudbase-ai-toolkit/prompts/cloudbase-platform',
-  },
-];
+interface CategoryInfo {
+  id: string;
+  label: string;
+  order: number;
+}
 
-const categoryLabels: Record<string, string> = {
-  '身份认证': '身份认证',
-  '数据库': '数据库',
-  '后端开发': '后端开发',
-  '应用集成': '应用集成',
-  '开发工具': '开发工具',
+// Category mapping from config.yaml
+const categoryMap: Record<string, CategoryInfo> = {
+  auth: { id: 'auth', label: '身份认证', order: 1 },
+  database: { id: 'database', label: '数据库', order: 2 },
+  backend: { id: 'backend', label: '后端开发', order: 3 },
+  frontend: { id: 'frontend', label: '应用集成', order: 4 },
+  ai: { id: 'ai', label: 'AI', order: 5 },
+  tools: { id: 'tools', label: '开发工具', order: 6 },
 };
 
-
-const groupedScenarios = scenarios.reduce((acc, scenario) => {
-  if (!acc[scenario.category]) {
-    acc[scenario.category] = [];
-  }
-  acc[scenario.category].push(scenario);
-  return acc;
-}, {} as Record<string, Scenario[]>);
+const prompts = promptsData as PromptItem[];
 
 export default function PromptScenarios() {
+  // Group prompts by category and sort
+  const groupedScenarios = useMemo(() => {
+    const grouped = prompts.reduce((acc, prompt) => {
+      const categoryInfo = categoryMap[prompt.category];
+      if (!categoryInfo) return acc;
+      
+      const categoryLabel = categoryInfo.label;
+      if (!acc[categoryLabel]) {
+        acc[categoryLabel] = {
+          order: categoryInfo.order,
+          items: [],
+        };
+      }
+      acc[categoryLabel].items.push({
+        ...prompt,
+        docUrl: `/ai/cloudbase-ai-toolkit/prompts/${prompt.id}`,
+      });
+      return acc;
+    }, {} as Record<string, { order: number; items: Array<PromptItem & { docUrl: string }> }>);
+
+    // Sort items within each category by order
+    Object.keys(grouped).forEach((category) => {
+      grouped[category].items.sort((a, b) => a.order - b.order);
+    });
+
+    return grouped;
+  }, []);
+
+  // Sort categories by order
+  const sortedCategories = Object.entries(groupedScenarios).sort(
+    ([, a], [, b]) => (a as { order: number }).order - (b as { order: number }).order
+  );
+
   return (
     <div className={styles.container}>
-      {Object.entries(groupedScenarios).map(([category, items]) => (
-        <div key={category} className={styles.category}>
-          <h3 className={styles.categoryTitle}>{categoryLabels[category] || category}</h3>
-          <div className={styles.grid}>
-            {items.map((scenario) => {
-              return (
+      {sortedCategories.map(([category, group]) => {
+        const { items } = group as { order: number; items: Array<PromptItem & { docUrl: string }> };
+        return (
+          <div key={category} className={styles.category}>
+            <h3 className={styles.categoryTitle}>{category}</h3>
+            <div className={styles.grid}>
+              {items.map((scenario) => (
                 <Link
                   key={scenario.id}
                   to={scenario.docUrl}
                   className={styles.card}
                 >
-                  <div className={styles.content}>
-                    <div className={styles.title}>{scenario.title}</div>
-                    <div className={styles.description}>{scenario.description}</div>
-                  </div>
+                <div className={styles.content}>
+                  <div className={styles.title}>{scenario.title}</div>
+                  <div className={styles.description}>{scenario.shortDescription || scenario.description}</div>
+                </div>
                 </Link>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
-

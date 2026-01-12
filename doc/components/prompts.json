@@ -3,6 +3,7 @@
     "id": "auth-tool",
     "title": "身份认证：配置管理",
     "description": "配置和管理 CloudBase 认证提供商，启用/禁用登录方式（短信、邮箱、微信、Google、匿名、用户名密码等）",
+    "shortDescription": "配置管理认证提供商",
     "category": "auth",
     "order": 1,
     "prompts": [
@@ -16,6 +17,7 @@
     "id": "auth-web",
     "title": "身份认证：Web SDK",
     "description": "使用 CloudBase Web SDK 进行前端身份认证",
+    "shortDescription": "Web SDK 身份认证",
     "category": "auth",
     "order": 2,
     "prompts": [
@@ -27,6 +29,7 @@
     "id": "auth-wechat",
     "title": "身份认证：微信小程序",
     "description": "微信小程序中使用 CloudBase Auth 进行身份认证",
+    "shortDescription": "微信小程序身份认证",
     "category": "auth",
     "order": 3,
     "prompts": [
@@ -38,6 +41,7 @@
     "id": "auth-http-api",
     "title": "身份认证：App 集成",
     "description": "使用 CloudBase HTTP API 进行身份认证，适用于 Android、iOS、Cocos、Flutter、React Native 等原生应用和框架",
+    "shortDescription": "Android、iOS 原生应用",
     "category": "auth",
     "order": 4,
     "prompts": [
@@ -49,6 +53,7 @@
     "id": "no-sql-web-sdk",
     "title": "文档数据库：Web SDK",
     "description": "使用 CloudBase 文档数据库 Web SDK 进行数据操作",
+    "shortDescription": "Web SDK 文档数据库",
     "category": "database",
     "order": 1,
     "prompts": [
@@ -60,6 +65,7 @@
     "id": "no-sql-wx-mp-sdk",
     "title": "文档数据库：小程序 SDK",
     "description": "微信小程序中使用 CloudBase 文档数据库 SDK",
+    "shortDescription": "小程序 SDK 文档数据库",
     "category": "database",
     "order": 2,
     "prompts": [
@@ -71,6 +77,7 @@
     "id": "relational-database-tool",
     "title": "关系型数据库：工具与规则",
     "description": "操作 CloudBase 关系型数据库的工具和规则,支持[连接自有数据库](https://docs.cloudbase.net/database/configuration/db/hosted-mysql/init)",
+    "shortDescription": "MySQL 关系型数据库",
     "category": "database",
     "order": 3,
     "prompts": [
@@ -82,6 +89,7 @@
     "id": "relational-database-web",
     "title": "关系型数据库：Web SDK",
     "description": "在 Web 应用中使用 CloudBase 关系型数据库,支持[连接自有数据库](https://docs.cloudbase.net/database/configuration/db/hosted-mysql/init)",
+    "shortDescription": "Web SDK 关系型数据库",
     "category": "database",
     "order": 4,
     "prompts": [
@@ -93,6 +101,7 @@
     "id": "database-http-api",
     "title": "数据库：App 集成",
     "description": "使用 CloudBase HTTP API 进行数据库操作，适用于 Android、iOS 等原生应用",
+    "shortDescription": "Android、iOS 原生应用",
     "category": "database",
     "order": 6,
     "prompts": [
@@ -104,6 +113,7 @@
     "id": "cloud-functions",
     "title": "后端开发：云函数",
     "description": "开发和部署 Node.js 云函数，包括运行时选择、部署、日志查询、HTTP 访问配置",
+    "shortDescription": "Node.js 云函数",
     "category": "backend",
     "order": 1,
     "prompts": [
@@ -117,6 +127,7 @@
     "id": "cloudrun-development",
     "title": "后端开发：云托管",
     "description": "使用云托管开发和部署任意语言的后端服务",
+    "shortDescription": "Node.js、Python、Go、Java 等",
     "category": "backend",
     "order": 2,
     "prompts": [
@@ -128,6 +139,7 @@
     "id": "web-development",
     "title": "应用集成：Web 应用",
     "description": "Web 前端项目开发规则和静态托管部署",
+    "shortDescription": "React、Vue、Next.js",
     "category": "frontend",
     "order": 1,
     "prompts": [
@@ -139,6 +151,7 @@
     "id": "miniprogram-development",
     "title": "应用集成：微信小程序",
     "description": "微信小程序开发规则和 CloudBase 集成",
+    "shortDescription": "小程序开发与集成",
     "category": "frontend",
     "order": 2,
     "prompts": [
@@ -150,6 +163,7 @@
     "id": "ui-design",
     "title": "应用集成：UI 设计",
     "description": "专业的 UI 设计和前端界面指南",
+    "shortDescription": "专业界面设计指南",
     "category": "frontend",
     "order": 3,
     "prompts": [
@@ -161,6 +175,7 @@
     "id": "http-api",
     "title": "应用集成：App 集成",
     "description": "使用 CloudBase HTTP API 访问平台功能，适用于 Android、iOS 等任意原生语言开发",
+    "shortDescription": "Android、iOS 原生应用",
     "category": "frontend",
     "order": 4,
     "prompts": [
@@ -173,6 +188,7 @@
     "id": "spec-workflow",
     "title": "开发工具：Spec 工作流",
     "description": "标准软件工程工作流（需求分析、技术设计、任务规划）",
+    "shortDescription": "需求分析、技术设计、任务规划",
     "category": "tools",
     "order": 1,
     "prompts": [
@@ -184,6 +200,7 @@
     "id": "cloudbase-platform",
     "title": "开发工具：CloudBase 平台",
     "description": "CloudBase 平台知识库和最佳实践",
+    "shortDescription": "平台知识库和最佳实践",
     "category": "tools",
     "order": 2,
     "prompts": [
@@ -197,6 +214,7 @@
     "id": "ai-model-web",
     "title": "在 Web 应用中集成 AI 功能",
     "description": "在浏览器/Web 应用中使用 CloudBase AI 模型，支持文本生成和流式响应",
+    "shortDescription": "在 Web 应用中调用 AI",
     "category": "ai",
     "order": 1,
     "prompts": [
@@ -209,6 +227,7 @@
     "id": "ai-model-nodejs",
     "title": "在 Node.js 后端中集成 AI 功能",
     "description": "在 Node.js 后端服务或云函数中使用 CloudBase AI 模型，支持文本生成、流式响应和图片生成",
+    "shortDescription": "在后端服务中调用 AI",
     "category": "ai",
     "order": 2,
     "prompts": [
@@ -221,6 +240,7 @@
     "id": "ai-model-wechat",
     "title": "在微信小程序中集成 AI 功能",
     "description": "在微信小程序中使用 CloudBase AI 模型，支持文本生成和流式响应",
+    "shortDescription": "在小程序中调用 AI",
     "category": "ai",
     "order": 3,
     "prompts": [
