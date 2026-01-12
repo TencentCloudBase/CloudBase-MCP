@@ -79,11 +79,11 @@ function generateMDX(ruleConfig, files) {
   
   // How to use section - just a brief note with link
   mdx += `## 如何使用\n\n`;
-  mdx += `查看[如何使用提示词](/ai/cloudbase-ai-toolkit/prompts/how-to-use)了解详细的使用方法。\n\n`;
+  mdx += `查看[如何使用Skill](/ai/cloudbase-ai-toolkit/prompts/how-to-use)了解详细的使用方法。\n\n`;
   
   // Test prompts section
   if (prompts.length > 0) {
-    mdx += `### 测试提示词\n\n`;
+    mdx += `### 测试 Skill\n\n`;
     mdx += `你可以使用以下提示词来测试：\n\n`;
     for (const prompt of prompts) {
       mdx += `- "${prompt}"\n`;
@@ -96,7 +96,7 @@ function generateMDX(ruleConfig, files) {
   mdx += `<AIDevelopmentPrompt ruleId="${id}" />\n\n`;
   
   // Prompt section
-  mdx += `## 提示词\n\n`;
+  mdx += `## Skill \n\n`;
   
   if (files.length === 1) {
     // Single file - show content in code block with filename as title
