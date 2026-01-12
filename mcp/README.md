@@ -92,7 +92,7 @@ Hosted Mode:
   "mcpServers": {
     "cloudbase": {
       "type": "http",
-      "url": "https://weda-api.cloud.tencent.com/mcp/v1?env_id=<env_id>",
+      "url": "https://tcb-api.cloud.tencent.com/mcp/v1?env_id=<env_id>",
       "headers": {
           "X-TencentCloud-SecretId": "<腾讯云 Secret ID>",
           "X-TencentCloud-SecretKey": "<腾讯云 Secret Key"
@@ -111,7 +111,7 @@ Hosted Mode:
 **禁用插件示例：**
 ```
 # 禁用 rag 和 env 插件
-https://weda-api.cloud.tencent.com/mcp/v1?env_id=YOUR_ENV_ID&disable_plugins=rag&disable_plugins=env
+https://tcb-api.cloud.tencent.com/mcp/v1?env_id=YOUR_ENV_ID&disable_plugins=rag&disable_plugins=env
 ```
 **可用插件枚举值：**
 `env`, `database`, `functions`, `hosting`, `storage`, `setup`, `interactive`, `rag`, `cloudrun`, `gateway`, `download`, `security-rule`, `invite-code`, `capi`
