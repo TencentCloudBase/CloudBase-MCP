@@ -1,8 +1,10 @@
 <div align="center"><a name="readme-top"></a>
+  
+<a href="https://tencentcloudbase.github.io/CloudBase-MCP/2025/" target="_blank"><img width="3094" height="654" alt="banner" src="https://github.com/user-attachments/assets/39adbeac-1f43-4a31-bb9b-d6f65e905295" /></a>
 
 ![](scripts/assets/toolkit-better.gif)
 
-<h1>CloudBase AI ToolKit</h1>
+<h1>CloudBase MCP</h1>
 
 **🪐 AI 编程，一键上线**<br/>
 连接 AI IDE 与腾讯云 CloudBase 的部署桥梁，让你的 AI 应用即刻上线
@@ -10,6 +12,7 @@
 [English](./README-EN.md) · **简体中文** · [文档][docs] · [更新日志][changelog] · [反馈问题][github-issues-link]
 
 <!-- SHIELD GROUP -->
+
 
 [![][npm-version-shield]][npm-link]
 [![][npm-downloads-shield]][npm-link]
@@ -20,6 +23,7 @@
 ![][github-contributors-shield]
 [![][cnb-shield]][cnb-link]
 [![][deepwiki-shield]][deepwiki-link]
+[![MCP Badge](https://lobehub.com/badge/mcp/tencentcloudbase-cloudbase-ai-toolkit)](https://lobehub.com/mcp/tencentcloudbase-cloudbase-ai-toolkit)
 
 **发现了一个让 AI 编程一键上线的神器，推荐给正在用 AI 编程的朋友**
 
@@ -29,19 +33,21 @@
 
 <sup>从 AI 提示词到应用上线的最短路径</sup>
 
+<img width="1148" height="389" alt="Clipboard_Screenshot_1764660604" src="https://github.com/user-attachments/assets/86294f88-632e-46b5-958f-94d8c8b85070" />
+
 [![][github-trending-shield]](https://github.com/TencentCloudBase/CloudBase-AI-ToolKit)
 
 [<img width="791" height="592" alt="Clipboard_Screenshot_1763724670" src="https://github.com/user-attachments/assets/f769beb7-5710-4397-8854-af2b7e452f70" />](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/tutorials)
 
 </div>
 
-## 为什么你需要 CloudBase AI ToolKit？
+## 为什么你需要 CloudBase MCP？
 
 AI 编程工具（如 Cursor、CodeBuddy）解决了**代码生成**的难题。
 
 但是，从"生成代码"到"应用上线"（部署、配置数据库、CDN、域名），依然存在一条鸿沟。
 
-**CloudBase AI ToolKit 填补了这条鸿沟。**
+**CloudBase MCP**（原 CloudBase AI ToolKit）填补了这条鸿沟。
 
 你不再需要：
 - ❌ 繁琐的 DevOps 配置和 YAML 文件
@@ -145,7 +151,7 @@ AI 编程工具（如 Cursor、CodeBuddy）解决了**代码生成**的难题。
 - 一键部署到云端
 ```
 
-<img width="1032" height="776" alt="f1" src="https://github.com/user-attachments/assets/62e6dd9d-9c53-4668-841d-0ac1985a75e0" />
+<img width="1200" alt="AI Native" src="scripts/assets/cloudbase-mcp-card-01.png" />
 
 ### 2. 一键部署（One-Click Deploy）
 
@@ -159,7 +165,7 @@ AI 自动化的 MCP 部署流，AI 帮你搞定从云函数、数据库到静态
 - 自动返回访问链接
 ```
 
-<img width="1032" height="776" alt="f2" src="https://github.com/user-attachments/assets/20e0493a-fa50-4c03-b4ac-3dc584eb4ccb" />
+<img width="1200" alt="One-Click Deploy" src="scripts/assets/cloudbase-mcp-card-02.png" />
 
 ### 3. 智能调试（Smart Debugging）
 
@@ -173,7 +179,7 @@ AI 自动化的 MCP 部署流，AI 帮你搞定从云函数、数据库到静态
 - 自动重新部署
 ```
 
-<img width="1032" height="776" alt="f5" src="https://github.com/user-attachments/assets/5a61714a-ddcf-448a-8740-983bbad9d2b9" />
+<img width="1200" alt="Smart Debugging" src="scripts/assets/cloudbase-mcp-card-03.png" />
 
 ### 4. 全栈支持（Full-Stack Ready）
 
@@ -185,7 +191,7 @@ AI 自动化的 MCP 部署流，AI 帮你搞定从云函数、数据库到静态
 | **微信小程序** | 原生/UniApp | 小程序发布 |
 | **后端服务** | Node.js/Python | 云函数/云托管 |
 
-<img width="1032" height="776" alt="f3" src="https://github.com/user-attachments/assets/1c50fed3-3223-4cd6-8534-885dc798c08e" />
+<img width="1200" alt="Full-Stack Ready" src="scripts/assets/cloudbase-mcp-card-04.png" />
 
 ### 5. 知识检索（Knowledge Search）
 
@@ -198,7 +204,7 @@ AI 自动化的 MCP 部署流，AI 帮你搞定从云函数、数据库到静态
 - 提供代码示例
 ```
 
-<img width="1032" height="776" alt="f6" src="https://github.com/user-attachments/assets/9ccb6b39-1f76-46b8-8b10-b076bfdcc37f" />
+<img width="1200" alt="Knowledge Search" src="scripts/assets/cloudbase-mcp-card-05.png" />
 
 ### 6. 灵活工作流（Flexible Workflow）
 
@@ -209,7 +215,7 @@ AI 自动化的 MCP 部署流，AI 帮你搞定从云函数、数据库到静态
 /no_spec - 快速迭代（直接实现）
 ```
 
-<img width="1032" height="776" alt="f7" src="https://github.com/user-attachments/assets/30a0632c-92e9-4f6d-8da9-10aef044d516" />
+<img width="1200" alt="Flexible Workflow" src="scripts/assets/cloudbase-mcp-card-06.png" />
 
 
 ## 📦 安装配置
@@ -358,26 +364,6 @@ CodeBuddy 已内置 CloudBase MCP，无需配置即可使用。
 - [插件系统](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/plugins)
 - [常见问题](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/faq)
 
-### 教程
-
-#### 文章
-- [用 CloudBase AI CLI 开发邻里闲置物品循环利用小程序](https://docs.cloudbase.net/practices/ai-cli-mini-program)
-- [使用 CodeBuddy IDE + CloudBase 一站式开发卡片翻翻翻游戏](https://mp.weixin.qq.com/s/2EM3RBzdQUCdfld2CglWgg)
-- [1小时开发微信小游戏《我的早餐店》](https://cloud.tencent.com/developer/article/2532595)
-- [更多教程...](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/tutorials)
-
-#### 视频
-- [云开发CloudBase：用AI开发一款分手厨房小游戏](https://www.bilibili.com/video/BV1v5KAzwEf9/)
-- [软件3.0：AI 编程新时代的最佳拍档](https://www.bilibili.com/video/BV15gKdz1E5N/)
-- [更多视频...](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/tutorials)
-
-### 项目案例
-
-- [五子棋联机游戏](https://github.com/TencentCloudBase/awesome-cloudbase-examples/tree/master/web/gomoku-game)
-- [分手厨房联机游戏](https://github.com/TencentCloudBase/awesome-cloudbase-examples/tree/master/web/overcooked-game)
-- [电商管理后台](https://github.com/TencentCloudBase/awesome-cloudbase-examples/tree/master/web/ecommerce-management-backend)
-- [更多案例...](https://github.com/TencentCloudBase/awesome-cloudbase-examples)
-
 ## 💬 社区
 
 ### 微信交流群
@@ -401,7 +387,7 @@ CodeBuddy 已内置 CloudBase MCP，无需配置即可使用。
 
 ## Contributors
 
-感谢所有为 CloudBase AI ToolKit 做出贡献的开发者！
+感谢所有为 CloudBase MCP 做出贡献的开发者！
 
 [![Contributors](https://contrib.rocks/image?repo=TencentCloudBase/CloudBase-AI-ToolKit)](https://github.com/TencentCloudBase/CloudBase-AI-ToolKit/graphs/contributors)
 

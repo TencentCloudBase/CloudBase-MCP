@@ -42,7 +42,9 @@ When this document references a rule file, try locations in this order:
 | `ui-design` | UI Design Guidelines |
 | `spec-workflow` | Software Engineering Workflow |
 | `data-model-creation` | Data Model Creation |
-| `ai-model-cloudbase` | AI Model Calling (CloudBase) |
+| `ai-model-web` | AI Model Calling (Web SDK) |
+| `ai-model-nodejs` | AI Model Calling (Node SDK) |
+| `ai-model-wechat` | AI Model Calling (WeChat Mini Program) |
 
 ### Usage Example
 
@@ -67,7 +69,7 @@ When you see "Read `{auth-web}` rule file" in this document:
 5. **⚠️ Authentication Configuration Check (MANDATORY)**: **When user mentions ANY login/authentication requirement, MUST FIRST read `{auth-tool}` rule file (using path resolution strategy) and check/configure authentication providers BEFORE implementing frontend code**
 6. **Platform Rules**: Read `{web-development}` rule file (using path resolution strategy) for platform-specific rules (SDK integration, static hosting, build configuration)
 7. **Authentication**: Read `{auth-web}` rule file (using path resolution strategy) and `{auth-tool}` - **MUST use Web SDK built-in authentication**
-8. **Database**: 
+8. **Database**:
    - NoSQL: `rules/no-sql-web-sdk/rule.md`
    - MySQL: `rules/relational-database-web/rule.md` + `rules/relational-database-tool/rule.md`
 
@@ -78,7 +80,7 @@ When you see "Read `{auth-web}` rule file" in this document:
 4. **Core Capabilities**: Read Core Capabilities section below (especially UI Design and Database + Authentication for Mini Program)
 5. **Platform Rules**: Read `rules/miniprogram-development/rule.md` for platform-specific rules (project structure, WeChat Developer Tools, wx.cloud usage)
 6. **Authentication**: Read `rules/auth-wechat/rule.md` - **Naturally login-free, get OPENID in cloud functions**
-7. **Database**: 
+7. **Database**:
    - NoSQL: `rules/no-sql-wx-mp-sdk/rule.md`
    - MySQL: `rules/relational-database-tool/rule.md` (via tools)
 
@@ -86,13 +88,12 @@ When you see "Read `{auth-web}` rule file" in this document:
 1. **Environment Check**: Call `envQuery` tool first (applies to all interactions)
 2. **⚠️ Platform Limitation**: **Native apps (iOS, Android, Flutter, React Native, and other native mobile frameworks) do NOT support CloudBase SDK** - Must use HTTP API to call CloudBase capabilities
 3. **⚠️ UI Design (CRITICAL)**: **MUST read `rules/ui-design/rule.md` FIRST before generating any page, interface, component, or style** - This is NOT optional. You MUST explicitly read this file and output the design specification before writing any UI code.
-4. **Required Rules**: 
+4. **Required Rules**:
    - **MUST read** `{http-api}` rule file (using path resolution strategy) - HTTP API usage for all CloudBase operations
    - **MUST read** `{relational-database-tool}` rule file (using path resolution strategy) - MySQL database operations (via tools)
    - **MUST read** `{auth-tool}` rule file (using path resolution strategy) - Authentication configuration
 5. **Optional Rules**:
    - `rules/cloudbase-platform/rule.md` - Universal CloudBase platform knowledge
-   - `rules/ai-model-cloudbase/rule.md` - AI model calling (text generation, streaming, image generation via Node SDK ≥3.16.0)
    - `rules/ui-design/rule.md` - UI design guidelines (if UI is involved)
 6. **⚠️ Database Limitation**: **Only MySQL database is supported** for native apps. If users need to use MySQL database, **MUST prompt them to enable it in the console first**:
    - Enable MySQL database at: [CloudBase Console - MySQL Database](https://tcb.cloud.tencent.com/dev?envId=${envId}#/db/mysql/table/default/)
@@ -168,10 +169,10 @@ As the most important part of application development, the following four core c
 **Strengthen database and authentication capabilities**
 
 **Authentication**:
-- **Web Projects**: 
+- **Web Projects**:
   - Must use CloudBase Web SDK built-in authentication, refer to `rules/auth-web/rule.md`
   - Platform development rules: Refer to `rules/web-development/rule.md` for Web SDK integration, static hosting deployment, and build configuration
-- **Mini Program Projects**: 
+- **Mini Program Projects**:
   - Naturally login-free, get `wxContext.OPENID` in cloud functions, refer to `rules/auth-wechat/rule.md`
   - Platform development rules: Refer to `rules/miniprogram-development/rule.md` for mini program project structure, WeChat Developer Tools integration, and CloudBase capabilities
 - **Node.js Backend**: Refer to `rules/auth-nodejs/rule.md`
@@ -228,7 +229,7 @@ Identify current development scenario type, mainly for understanding project typ
 - `rules/relational-database-tool/rule.md` - MySQL database management (tools)
 - `rules/cloud-storage-web/rule.md` - Cloud storage operations (upload, download, file management)
 - `rules/cloudbase-platform/rule.md` - Universal CloudBase platform knowledge
-   - `rules/ai-model-cloudbase/rule.md` - AI model calling (text generation, streaming, image generation via Node SDK ≥3.16.0)
+- `rules/ai-model-web/rule.md` - AI model calling for Web apps (text generation, streaming)
 
 **Mini Program Projects - Required Rule Files:**
 - `rules/miniprogram-development/rule.md` - Platform development rules (project structure, WeChat Developer Tools, wx.cloud)
@@ -236,7 +237,7 @@ Identify current development scenario type, mainly for understanding project typ
 - `rules/no-sql-wx-mp-sdk/rule.md` - NoSQL database operations
 - `rules/relational-database-tool/rule.md` - MySQL database operations (via tools)
 - `rules/cloudbase-platform/rule.md` - Universal CloudBase platform knowledge
-   - `rules/ai-model-cloudbase/rule.md` - AI model calling (text generation, streaming, image generation via Node SDK ≥3.16.0)
+- `rules/ai-model-wechat/rule.md` - AI model calling for Mini Program (text generation, streaming with callbacks)
 
 **Native App Projects (iOS/Android/Flutter/React Native/etc.) - Required Rule Files:**
 - **⚠️ `rules/http-api/rule.md`** - **MANDATORY** - HTTP API usage for all CloudBase operations (SDK not supported)
@@ -245,7 +246,7 @@ Identify current development scenario type, mainly for understanding project typ
 
 **Native App Projects (iOS/Android/Flutter/React Native/etc.) - Optional Rule Files:**
 - `rules/cloudbase-platform/rule.md` - Universal CloudBase platform knowledge
-   - `rules/ai-model-cloudbase/rule.md` - AI model calling (text generation, streaming, image generation via Node SDK ≥3.16.0)
+- `rules/ai-model-nodejs/rule.md` - AI model calling via HTTP API (text generation, streaming, image generation)
 - `rules/ui-design/rule.md` - UI design guidelines (if UI is involved)
 
 **Universal Rule Files (All Projects):**
@@ -289,7 +290,7 @@ Before starting work, suggest confirming with user:
 
 ### Development
 
-1. **⚠️ Download CloudBase Templates (MANDATORY for New Projects)**: 
+1. **⚠️ Download CloudBase Templates (MANDATORY for New Projects)**:
    - **MUST call `downloadTemplate` tool FIRST when starting a new project** - Do NOT manually create project files
    - For Web projects: Use `downloadTemplate` with `template="react"` or `template="vue"`
    - For Mini Program projects: Use `downloadTemplate` with `template="miniprogram"`
@@ -297,7 +298,7 @@ Before starting work, suggest confirming with user:
    - **Only proceed with manual file creation if template download fails or user explicitly requests manual creation**
    - If unable to download to current directory, can use scripts to copy, note that hidden files also need to be copied
 
-2. **⚠️ UI Design Document Reading (MANDATORY)**: 
+2. **⚠️ UI Design Document Reading (MANDATORY)**:
    - **Before generating ANY page, interface, component, or style, MUST FIRST explicitly read the file `rules/ui-design/rule.md` using file reading tools**
    - **MUST output the design specification** (Purpose Statement, Aesthetic Direction, Color Palette, Typography, Layout Strategy) before writing any UI code
    - This is NOT optional - you MUST read the file and follow the design thinking framework and frontend aesthetics guidelines
@@ -374,7 +375,9 @@ For example, many interfaces require a confirm parameter, which is a boolean typ
 - **Cloud Storage (Web)**: `rules/cloud-storage-web/rule.md` - Upload, download, temporary URLs, file management using Web SDK
 
 ### AI Skills
-- **AI Model Calling**: `rules/ai-model-cloudbase/rule.md` - Call AI models (Hunyuan, DeepSeek) via CloudBase JS/Node SDK, HTTP API, and WeChat Mini Program. Supports text generation, streaming, and image generation (Node SDK only, requires ≥3.16.0)
+- **AI Model Calling (Web)**: `rules/ai-model-web/rule.md` - Call AI models in browser apps via @cloudbase/js-sdk. Supports text generation and streaming.
+- **AI Model Calling (Node.js)**: `rules/ai-model-nodejs/rule.md` - Call AI models in backend/cloud functions via @cloudbase/node-sdk ≥3.16.0. Supports text generation, streaming, and image generation.
+- **AI Model Calling (WeChat)**: `rules/ai-model-wechat/rule.md` - Call AI models in Mini Program via wx.cloud.extend.AI. Supports text generation and streaming with callbacks.
 
 ### 🎨 ⚠️ UI Design Skill (CRITICAL - Read FIRST)
 - **`rules/ui-design/rule.md`** - **MANDATORY - HIGHEST PRIORITY**
