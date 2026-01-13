@@ -37,7 +37,7 @@ export function registerSQLDatabaseTools(server: ExtendedMcpServer) {
         const schemaId = envId;
         const instanceId = "default";
 
-        const result = await cloudbase.commonService("tcb").call({
+        const result = await cloudbase.commonService("tcb", "2018-06-08").call({
           Action: "RunSql",
           Param: {
             EnvId: envId,
@@ -118,7 +118,7 @@ export function registerSQLDatabaseTools(server: ExtendedMcpServer) {
         const schemaId = envId;
         const instanceId = "default";
 
-        const result = await cloudbase.commonService("tcb").call({
+        const result = await cloudbase.commonService("tcb", "2018-06-08").call({
           Action: "RunSql",
           Param: {
             EnvId: envId,
