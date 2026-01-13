@@ -20,7 +20,7 @@ import { CSS_STYLES } from './styles.js';
 
 export interface EnvSetupOptions {
   envs?: any[];
-  accountInfo?: { uin?: string };
+  accountInfo?: { uin?: string; region?: string };
   errorContext?: any;
   sessionId?: string;
   wsPort: number;
@@ -32,11 +32,11 @@ export interface EnvSetupOptions {
  */
 export function renderEnvSetupPage(options: EnvSetupOptions): string {
   const { envs = [], accountInfo, errorContext, sessionId, wsPort, ide } = options;
-  
+
   const hasEnvs = envs.length > 0;
   const hasInitError = !!errorContext?.initTcbError;
   const hasErrors = !!(errorContext?.initTcbError || errorContext?.createEnvError);
-  
+
   // Build env list HTML
   let envListHTML = '';
   if (hasEnvs) {
@@ -57,7 +57,7 @@ export function renderEnvSetupPage(options: EnvSetupOptions): string {
       ${renderNoResultsState()}
     `;
   }
-  
+
   // Build body HTML
   const bodyHTML = `
     <div class="modal">
@@ -79,10 +79,10 @@ export function renderEnvSetupPage(options: EnvSetupOptions): string {
       </div>
     </div>
   `;
-  
+
   // Get JavaScript with WebSocket port
   const scripts = getJavaScripts(wsPort);
-  
+
   // Assemble final HTML
   return buildHTMLPage(CSS_STYLES, bodyHTML, scripts);
 }

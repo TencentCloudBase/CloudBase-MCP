@@ -82,9 +82,9 @@ class EnvironmentManager {
                 };
                 throw enhancedError;
             }
-            
+
             const autoEnvId = setupResult.selectedEnvId;
-            
+
             if (!autoEnvId) {
                 // Build detailed error message from failure info
                 const errorMessage = this._buildDetailedErrorMessage(setupResult.failureInfo);
@@ -94,7 +94,7 @@ class EnvironmentManager {
                     error: setupResult.failureInfo?.error,
                     details: setupResult.failureInfo?.details,
                 });
-                
+
                 // Create error with detailed information
                 const detailedError = new Error(errorMessage);
                 (detailedError as any).failureInfo = setupResult.failureInfo;
@@ -135,14 +135,14 @@ class EnvironmentManager {
         }
 
         const { reason, error: errorMsg, errorCode, helpUrl, details } = failureInfo;
-        
+
         let message = "CloudBase Environment ID not found after auto setup.\n\n";
         message += `原因: ${this._getReasonDescription(reason)}\n`;
-        
+
         if (errorMsg) {
             message += `错误: ${errorMsg}\n`;
         }
-        
+
         if (errorCode) {
             message += `错误代码: ${errorCode}\n`;
         }
@@ -175,7 +175,7 @@ class EnvironmentManager {
         message += "\n解决方案:\n";
         message += "1. 手动设置环境ID: 设置环境变量 CLOUDBASE_ENV_ID\n";
         message += "2. 使用工具设置: 运行 setupEnvironmentId 工具\n";
-        
+
         if (helpUrl) {
             message += `3. 查看帮助文档: ${helpUrl}\n`;
         } else {
@@ -255,7 +255,10 @@ export async function getCloudBaseManager(options: GetManagerOptions = {}): Prom
     }
 
     try {
-        const loginState = await getLoginState();
+        // Get region from environment variable for auth URL
+        // Note: At this point, cloudBaseOptions is undefined (checked above), so only use env var
+        const region = process.env.TCB_REGION;
+        const loginState = await getLoginState({ region });
         const {
             envId: loginEnvId,
             secretId,
@@ -270,11 +273,11 @@ export async function getCloudBaseManager(options: GetManagerOptions = {}): Prom
             // This avoids unnecessary async calls when we have a valid envId available
             const cachedEnvId = envManager.getCachedEnvId();
             if (cachedEnvId) {
-                debug('使用 envManager 缓存的环境ID:', {cachedEnvId});
+                debug('使用 envManager 缓存的环境ID:', { cachedEnvId });
                 finalEnvId = cachedEnvId;
             } else if (loginEnvId) {
                 // If no cache but loginState has envId, use it to avoid triggering auto-setup
-                debug('使用 loginState 中的环境ID:', {loginEnvId});
+                debug('使用 loginState 中的环境ID:', { loginEnvId });
                 finalEnvId = loginEnvId;
             } else {
                 // Only call envManager.getEnvId() when neither cache nor loginState has envId
@@ -285,12 +288,17 @@ export async function getCloudBaseManager(options: GetManagerOptions = {}): Prom
 
         // envId priority: envManager.cachedEnvId > envManager.getEnvId() > loginState.envId > undefined
         // Note: envManager.cachedEnvId has highest priority as it reflects user's latest environment switch
+        // Region priority: process.env.TCB_REGION > undefined (use SDK default)
+        // At this point, cloudBaseOptions is undefined (checked above), so only use env var if present
+        // Reuse region variable declared above (line 259) for CloudBase initialization
         const manager = new CloudBase({
             secretId,
             secretKey,
             envId: finalEnvId || loginEnvId,
             token,
             proxy: process.env.http_proxy,
+            region,
+            // REGION 国际站需要指定 region
         });
         return manager;
     } catch (err) {
@@ -300,16 +308,19 @@ export async function getCloudBaseManager(options: GetManagerOptions = {}): Prom
 }
 
 /**
- * 使用传入的 CloudBase 配置创建 manager，不使用缓存
- * @param cloudBaseOptions 传入的 CloudBase 配置选项
- * @returns CloudBase manager 实例
+ * Create a manager with the provided CloudBase options, without using cache
+ * @param cloudBaseOptions Provided CloudBase options
+ * @returns CloudBase manager instance
  */
 export function createCloudBaseManagerWithOptions(cloudBaseOptions: CloudBaseOptions): CloudBase {
-    debug('使用传入的 CloudBase 配置创建 manager:', cloudBaseOptions);
+    debug('Create manager with provided CloudBase options:', cloudBaseOptions);
 
+    // Region priority: cloudBaseOptions.region > process.env.TCB_REGION > undefined (use SDK default)
+    const region = cloudBaseOptions.region ?? process.env.TCB_REGION ?? undefined;
     const manager = new CloudBase({
         ...cloudBaseOptions,
         proxy: cloudBaseOptions.proxy || process.env.http_proxy,
+        region
     });
 
     return manager;
