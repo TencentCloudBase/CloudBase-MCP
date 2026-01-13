@@ -24,18 +24,18 @@ import {
 async function getUserAppIdFromCam(): Promise<{ Uin: string; OwnerUin: string; AppId: number } | null> {
   try {
     debug("[interactive] Calling CAM API GetUserAppId via commonService...");
-    
+
     const cloudbase = await getCloudBaseManager({
       requireEnvId: false,
     });
-    
+
     const result = await cloudbase.commonService("cam").call({
       Action: "GetUserAppId",
       Param: {},
     });
-    
+
     debug("[interactive] CAM API call succeeded:", result);
-    
+
     // CAM API returns data directly at top level, not wrapped in Response
     if (result && (result.Uin || result.uin)) {
       return {
@@ -44,7 +44,7 @@ async function getUserAppIdFromCam(): Promise<{ Uin: string; OwnerUin: string; A
         AppId: result.AppId || result.appId || 0,
       };
     }
-    
+
     // Fallback: try Response wrapper (for compatibility)
     if (result && result.Response) {
       return {
@@ -53,10 +53,10 @@ async function getUserAppIdFromCam(): Promise<{ Uin: string; OwnerUin: string; A
         AppId: result.Response.AppId || result.Response.appId || 0,
       };
     }
-    
+
     return null;
   } catch (error) {
-    debug("[interactive] Failed to get user AppId from CAM API:", 
+    debug("[interactive] Failed to get user AppId from CAM API:",
       error instanceof Error ? error : new Error(String(error)));
     return null;
   }
@@ -235,7 +235,7 @@ export async function _promptAndSetEnvironmentId(
     ignoreEnvVars: options?.ignoreEnvVars,
     optionsKeys: options ? Object.keys(options).join(', ') : 'null',
   });
-  
+
   if (!server) {
     error("[interactive] CRITICAL: options?.server is undefined! This will cause IDE detection to fail.");
     error("[interactive] options object:", options);
@@ -243,9 +243,14 @@ export async function _promptAndSetEnvironmentId(
 
   // 1. 确保用户已登录
   debug("[interactive] Step 1: Checking login state...");
+  // Get region from server options or environment variable for auth URL
+  // Note: serverCloudBaseOptions will be declared later (line 282), so we get it here first
+  const serverCloudBaseOptionsForAuth = server?.cloudBaseOptions;
+  const region = serverCloudBaseOptionsForAuth?.region || process.env.TCB_REGION;
   const loginState = await getLoginState({
     fromCloudBaseLoginPage: options?.loginFromCloudBaseLoginPage,
     ignoreEnvVars: options?.ignoreEnvVars,
+    region,
   });
   debug("[interactive] Login state:", {
     hasLoginState: !!loginState,
@@ -288,7 +293,7 @@ export async function _promptAndSetEnvironmentId(
   // IMPORTANT: server from options is ExtendedMcpServer instance, not a Promise
   // But we need to ensure it's properly passed through the chain
   let resolvedServer = server instanceof Promise ? await server : server;
-  
+
   // FALLBACK: If server is not provided, try to get from existing InteractiveServer instance
   // This handles the case when autoSetupEnvironmentId is called without server parameter
   // Note: In CloudMode with multiple server instances, this may not work perfectly,
@@ -309,7 +314,7 @@ export async function _promptAndSetEnvironmentId(
       warn("[interactive] IDE detection (e.g., CodeBuddy) will fail, and browser will be opened instead.");
     }
   }
-  
+
   debug("[interactive] Resolved server:", {
     isPromise: server instanceof Promise,
     hasServer: !!resolvedServer,
@@ -319,11 +324,11 @@ export async function _promptAndSetEnvironmentId(
     serverType: typeof resolvedServer,
     serverKeys: resolvedServer ? Object.keys(resolvedServer).slice(0, 10).join(', ') : 'null'
   });
-  
+
   const interactiveServer = getInteractiveServer(resolvedServer);
   const currentSessionId = server?.currentSessionId; // We need to pass this somehow
   let shouldRetry = false;
-  
+
   if (currentSessionId) {
     const sessionData = (interactiveServer as any).sessionData?.get(currentSessionId);
     if (sessionData?.retryInitTcb) {
@@ -332,9 +337,9 @@ export async function _promptAndSetEnvironmentId(
       debug("[interactive] Retry InitTcb requested, will retry initialization");
     }
   }
-  
+
   debug("[interactive] Step 2.1: Checking and initializing TCB service...", { shouldRetry });
-  
+
   // If retry is requested and we have an error, force re-initialization
   if (shouldRetry && setupContext.initTcbError) {
     debug("[interactive] Retrying InitTcb due to user request");
@@ -342,7 +347,7 @@ export async function _promptAndSetEnvironmentId(
     setupContext.tcbServiceInitialized = false;
     setupContext.initTcbError = undefined;
   }
-  
+
   setupContext = await checkAndInitTcbService(cloudbase, setupContext);
   debug("[interactive] TCB service setup completed:", {
     tcbServiceChecked: setupContext.tcbServiceChecked,
@@ -371,7 +376,7 @@ export async function _promptAndSetEnvironmentId(
       Channels: ["dcloud", "iotenable", "tem", "scene_module"], // Filter special channels
     };
     debug("[interactive] DescribeEnvs params:", queryParams);
-    
+
     envResult = await cloudbase.commonService("tcb").call({
       Action: "DescribeEnvs",
       Param: queryParams,
@@ -452,7 +457,7 @@ export async function _promptAndSetEnvironmentId(
 
   if (!EnvList || EnvList.length === 0) {
     debug("[interactive] No environments found");
-    
+
     // Report no_envs event with context
     await telemetryReporter.report('toolkit_env_setup', {
       step: 'no_envs',
@@ -468,12 +473,12 @@ export async function _promptAndSetEnvironmentId(
     // If InitTcb failed, skip environment creation
     if (!setupContext.initTcbError && setupContext.tcbServiceInitialized) {
       debug("[interactive] TCB service initialized, attempting to create free environment...");
-      
+
       // Try to create free environment (both normal and cloud mode)
       debug("[interactive] Calling checkAndCreateFreeEnv...");
-      const { success, envId, context: createContext } = 
+      const { success, envId, context: createContext } =
         await checkAndCreateFreeEnv(cloudbase, setupContext);
-      
+
       setupContext = { ...setupContext, ...createContext };
 
       debug("[interactive] checkAndCreateFreeEnv result:", {
@@ -506,7 +511,7 @@ export async function _promptAndSetEnvironmentId(
         // Validate envId before using it
         if (typeof envId === 'string' && envId.trim() !== '') {
           const trimmedEnvId = envId.trim();
-          
+
           // Verify the environment exists by querying the list again
           // Sometimes creation is async and env might not be immediately available
           debug("[interactive] Verifying created environment exists in list...");
@@ -519,17 +524,17 @@ export async function _promptAndSetEnvironmentId(
                 Channels: ["dcloud", "iotenable", "tem", "scene_module"],
               },
             });
-            
+
             const verifyEnvList = verifyResult?.EnvList || verifyResult?.Data?.EnvList || [];
             const envExists = verifyEnvList.some((env: any) => env.EnvId === trimmedEnvId);
-            
+
             debug("[interactive] Environment verification result:", {
               envId: trimmedEnvId,
               exists: envExists,
               totalEnvs: verifyEnvList.length,
               envIds: verifyEnvList.map((e: any) => e.EnvId)
             });
-            
+
             if (envExists) {
               // Auto-select the newly created environment
               selectedEnvId = trimmedEnvId;
@@ -600,7 +605,7 @@ export async function _promptAndSetEnvironmentId(
           helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp"
         };
       }
-      
+
       // Log final state
       debug("[interactive] Final state after environment creation attempt:", {
         success,
@@ -622,7 +627,7 @@ export async function _promptAndSetEnvironmentId(
       let errorMsg = "未找到可用环境";
       let failureReason: EnvSetupFailureInfo['reason'] = 'no_environments';
       let errorCode = "NO_ENVIRONMENTS";
-      
+
       if (setupContext.initTcbError) {
         errorMsg += `\nCloudBase 初始化失败: ${setupContext.initTcbError.message}`;
         failureReason = 'tcb_init_failed';
@@ -680,12 +685,12 @@ export async function _promptAndSetEnvironmentId(
   // interactiveServer 已在前面声明，直接使用
   // 提取账号 UIN 用于显示
   // Try to get UIN from CAM API first, fallback to loginState
-  const accountInfo: { uin?: string } = {};
-  
+  const accountInfo: { uin?: string; region?: string } = {};
+
   // Try to get user info from CAM API
   debug("[interactive] Attempting to get user info from CAM API...");
   const camUserInfo = await getUserAppIdFromCam();
-  
+
   // Use OwnerUin as the main account identifier
   if (camUserInfo && camUserInfo.OwnerUin) {
     accountInfo.uin = camUserInfo.OwnerUin;
@@ -695,11 +700,20 @@ export async function _promptAndSetEnvironmentId(
     accountInfo.uin = camUserInfo.Uin;
     debug("[interactive] Got UIN from CAM API (OwnerUin not available):", { uin: camUserInfo.Uin });
   }
-  
+
   // Fallback to loginState if CAM API didn't work
   if (!accountInfo.uin && loginState && typeof loginState === "object" && "uin" in loginState) {
     accountInfo.uin = String(loginState.uin);
     debug("[interactive] Using UIN from loginState:", { uin: accountInfo.uin });
+  }
+
+  // Attach region from server options or environment variable fallback
+  // Reuse serverCloudBaseOptions declared earlier (line 278)
+  const currentServerCloudBaseOptions = server?.cloudBaseOptions;
+  if (currentServerCloudBaseOptions?.region) {
+    accountInfo.region = currentServerCloudBaseOptions.region;
+  } else if (process.env.TCB_REGION) {
+    accountInfo.region = process.env.TCB_REGION;
   }
 
   // Report display_env_selection event
@@ -788,7 +802,7 @@ export async function autoSetupEnvironmentId(mcpServer?: any): Promise<string | 
         cancelled,
         failureInfo,
       });
-      
+
       // Report failure to telemetry with detailed information
       if (failureInfo) {
         const telemetryData: any = {
@@ -798,7 +812,7 @@ export async function autoSetupEnvironmentId(mcpServer?: any): Promise<string | 
           errorCode: failureInfo.errorCode,
           error: failureInfo.error?.substring(0, 200),
         };
-        
+
         // Add detailed context based on failure reason
         if (failureInfo.details) {
           if (failureInfo.details.initTcbError) {
@@ -816,11 +830,11 @@ export async function autoSetupEnvironmentId(mcpServer?: any): Promise<string | 
             telemetryData.timeoutDuration = failureInfo.details.timeoutDuration;
           }
         }
-        
+
         if (failureInfo.helpUrl) {
           telemetryData.helpUrl = failureInfo.helpUrl;
         }
-        
+
         await telemetryReporter.report('toolkit_env_setup', telemetryData);
       } else {
         // Fallback: report without failureInfo
@@ -831,7 +845,7 @@ export async function autoSetupEnvironmentId(mcpServer?: any): Promise<string | 
           error: error || (noEnvs ? 'no_environments' : cancelled ? 'cancelled' : 'unknown'),
         });
       }
-      
+
       return null;
     }
 
@@ -840,7 +854,7 @@ export async function autoSetupEnvironmentId(mcpServer?: any): Promise<string | 
   } catch (error) {
     const errorObj = error instanceof Error ? error : new Error(String(error));
     console.error("自动配置环境ID时出错:", errorObj);
-    
+
     // Report unexpected error to telemetry
     await telemetryReporter.report('toolkit_env_setup', {
       step: 'auto_setup_exception',
@@ -849,7 +863,7 @@ export async function autoSetupEnvironmentId(mcpServer?: any): Promise<string | 
       error: errorObj.message.substring(0, 200),
       stack: errorObj.stack?.substring(0, 500),
     });
-    
+
     return null;
   }
 }
