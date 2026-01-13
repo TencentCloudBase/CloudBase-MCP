@@ -638,7 +638,7 @@ classDiagram
 <thead><tr><th>参数名</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
 <tbody>
 <tr><td><code>template</code></td><td>string</td><td>是</td><td>要下载的模板类型 可填写的值: "react", "vue", "miniprogram", "uniapp", "rules"</td></tr>
-<tr><td><code>ide</code></td><td>string</td><td></td><td>指定要下载的IDE类型。如果未指定，会根据 INTEGRATION_IDE 环境变量自动选择对应的IDE配置；如果环境变量也未设置，则必须传入此参数 可填写的值: "all", "cursor", "windsurf", "codebuddy", "claude-code", "cline", "gemini-cli", "opencode", "qwen-code", "baidu-comate", "openai-codex-cli", "augment-code", "github-copilot", "roocode", "tongyi-lingma", "trae", "qoder", "antigravity", "vscode", "kiro", "aider", "iflow-cli"</td></tr>
+<tr><td><code>ide</code></td><td>string</td><td>是</td><td>指定要下载的IDE类型。 可填写的值: "all", "cursor", "windsurf", "codebuddy", "claude-code", "cline", "gemini-cli", "opencode", "qwen-code", "baidu-comate", "openai-codex-cli", "augment-code", "github-copilot", "roocode", "tongyi-lingma", "trae", "qoder", "antigravity", "vscode", "kiro", "aider", "iflow-cli"</td></tr>
 <tr><td><code>overwrite</code></td><td>boolean</td><td></td><td>是否覆盖已存在的文件，默认为false（不覆盖）</td></tr>
 </tbody>
 </table>

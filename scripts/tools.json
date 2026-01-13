@@ -1249,7 +1249,7 @@
               "aider",
               "iflow-cli"
             ],
-            "description": "指定要下载的IDE类型。如果未指定，会根据 INTEGRATION_IDE 环境变量自动选择对应的IDE配置；如果环境变量也未设置，则必须传入此参数"
+            "description": "指定要下载的IDE类型。"
           },
           "overwrite": {
             "type": "boolean",
@@ -1257,7 +1257,8 @@
           }
         },
         "required": [
-          "template"
+          "template",
+          "ide"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
