@@ -511,11 +511,7 @@ export async function _promptAndSetEnvironmentId(
           // Sometimes creation is async and env might not be immediately available
           debug("[interactive] Verifying created environment exists in list...");
           try {
-<<<<<<< HEAD
-            const verifyResult = await cloudbase.commonService("tcb", "2018-11-27").call({
-=======
             const verifyResult = await cloudbase.commonService("tcb", "2018-06-08").call({
->>>>>>> fix/update-tcb-api-version
               Action: "DescribeEnvs",
               Param: {
                 EnvTypes: ["weda", "baas"],
