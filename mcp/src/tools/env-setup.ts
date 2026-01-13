@@ -326,7 +326,7 @@ export async function checkAndCreateFreeEnv(
       
       debug('[env-setup] CreateFreeEnvByActivity params:', createParams);
       
-      const createResult = await cloudbase.commonService("tcb", "2018-11-27").call({
+      const createResult = await cloudbase.commonService("tcb", "2018-06-08").call({
         Action: "CreateFreeEnvByActivity",
         Param: createParams
       });
