@@ -372,7 +372,7 @@ export async function _promptAndSetEnvironmentId(
     };
     debug("[interactive] DescribeEnvs params:", queryParams);
     
-    envResult = await cloudbase.commonService("tcb").call({
+    envResult = await cloudbase.commonService("tcb", "2018-11-27").call({
       Action: "DescribeEnvs",
       Param: queryParams,
     });
@@ -511,7 +511,7 @@ export async function _promptAndSetEnvironmentId(
           // Sometimes creation is async and env might not be immediately available
           debug("[interactive] Verifying created environment exists in list...");
           try {
-            const verifyResult = await cloudbase.commonService("tcb").call({
+            const verifyResult = await cloudbase.commonService("tcb", "2018-11-27").call({
               Action: "DescribeEnvs",
               Param: {
                 EnvTypes: ["weda", "baas"],

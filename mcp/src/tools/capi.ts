@@ -6,7 +6,6 @@ const CATEGORY = "cloud-api";
 
 const ALLOWED_SERVICES = [
     "tcb",
-    "flexdb",
     "scf",
     "sts",
     "cam",
@@ -37,7 +36,7 @@ export function registerCapiTools(server: ExtendedMcpServer) {
                 service: z
                     .enum(ALLOWED_SERVICES)
                     .describe(
-                        "选择要访问的服务，必须先查看规则/技能确认是否可用。可选：tcb、flexdb、scf、sts、cam、lowcode、cdn、vpc。",
+                        "选择要访问的服务，必须先查看规则/技能确认是否可用。可选：tcb、scf、sts、cam、lowcode、cdn、vpc。",
                     ),
                 action: z
                     .string()

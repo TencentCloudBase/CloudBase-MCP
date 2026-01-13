@@ -371,8 +371,8 @@ updateCollection: 更新集合`),
         // 兼容对象和字符串
         const toJSONString = (v: any) =>
           typeof v === "object" && v !== null ? JSON.stringify(v) : v;
-        const result = await cloudbase.commonService("flexdb").call({
-          Action: "Query",
+        const result = await cloudbase.commonService("tcb", "2018-06-08").call({
+          Action: "QueryRecords",
           Param: {
             TableName: collectionName,
             MgoQuery: toJSONString(query),
@@ -559,7 +559,7 @@ async function insertDocuments({
     const instanceId = await getDatabaseInstanceId(getManager);
     // 将对象数组序列化为字符串数组
     const docsAsStrings = documents.map((doc) => JSON.stringify(doc));
-    const result = await cloudbase.commonService("flexdb").call({
+    const result = await cloudbase.commonService("tcb", "2018-06-08").call({
       Action: "PutItem",
       Param: {
         TableName: collectionName,
@@ -613,7 +613,7 @@ async function updateDocuments({
     const instanceId = await getDatabaseInstanceId(getManager);
     const toJSONString = (v: any) =>
       typeof v === "object" && v !== null ? JSON.stringify(v) : v;
-    const result = await cloudbase.commonService("flexdb").call({
+    const result = await cloudbase.commonService("tcb", "2018-06-08").call({
       Action: "UpdateItem",
       Param: {
         TableName: collectionName,
@@ -668,7 +668,7 @@ async function deleteDocuments({
     const instanceId = await getDatabaseInstanceId(getManager);
     const toJSONString = (v: any) =>
       typeof v === "object" && v !== null ? JSON.stringify(v) : v;
-    const result = await cloudbase.commonService("flexdb").call({
+    const result = await cloudbase.commonService("tcb", "2018-06-08").call({
       Action: "DeleteItem",
       Param: {
         TableName: collectionName,
