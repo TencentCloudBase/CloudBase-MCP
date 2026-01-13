@@ -53,11 +53,11 @@ function parseInitTcbError(err: any): EnvSetupError {
   const rawMessage = err.message || String(err);
   const errorCode = err.code || err.Code || "UnknownError";
   const requestId = err.requestId || err.RequestId || '';
-  
+
   // User-friendly error message
   let friendlyMessage = "准备工作";
   let actionText = "为了开始使用 CloudBase，请先完成账号认证和服务授权";
-  
+
   const errorInfo: EnvSetupError = {
     code: errorCode,
     message: friendlyMessage,
@@ -129,12 +129,12 @@ export async function checkAndInitTcbService(
   try {
     // Step 1: Check if TCB service is initialized
     debug('[env-setup] Starting TCB service check...');
-    debug('[env-setup] Context before check:', { 
+    debug('[env-setup] Context before check:', {
       uin: newContext.uin,
-      tcbServiceChecked: newContext.tcbServiceChecked 
+      tcbServiceChecked: newContext.tcbServiceChecked
     });
-    
-    const checkResult = await cloudbase.commonService("tcb", "2018-06-08").call({
+
+    const checkResult = await cloudbase.commonService("tcb").call({
       Action: "CheckTcbService",
       Param: {}
     });
@@ -142,11 +142,11 @@ export async function checkAndInitTcbService(
     newContext.tcbServiceChecked = true;
     newContext.tcbServiceInitialized = checkResult.Initialized;
 
-    debug('[env-setup] TCB service check completed:', { 
+    debug('[env-setup] TCB service check completed:', {
       initialized: checkResult.Initialized,
-      requestId: checkResult.RequestId 
+      requestId: checkResult.RequestId
     });
-    
+
     // Report check result
     await reportEnvSetupFlow({
       step: 'check_tcb_service',
@@ -158,9 +158,9 @@ export async function checkAndInitTcbService(
     if (!checkResult.Initialized) {
       debug('[env-setup] TCB service not initialized, attempting to initialize...');
       debug('[env-setup] InitTcb params:', { Source: "qcloud", Channel: "mcp" });
-      
+
       try {
-        const initResult = await cloudbase.commonService("tcb", "2018-06-08").call({
+        const initResult = await cloudbase.commonService("tcb").call({
           Action: "InitTcb",
           Param: {
             Source: "qcloud",
@@ -169,8 +169,8 @@ export async function checkAndInitTcbService(
         });
 
         newContext.tcbServiceInitialized = true;
-        debug('[env-setup] TCB service initialization succeeded:', { 
-          requestId: initResult.RequestId 
+        debug('[env-setup] TCB service initialization succeeded:', {
+          requestId: initResult.RequestId
         });
 
         // Report init success
@@ -183,7 +183,7 @@ export async function checkAndInitTcbService(
       } catch (initErr: any) {
         // Parse and save error, but don't throw - allow flow to continue
         newContext.initTcbError = parseInitTcbError(initErr);
-        
+
         debug('[env-setup] TCB service initialization failed:', {
           code: newContext.initTcbError.code,
           message: newContext.initTcbError.message,
@@ -192,7 +192,7 @@ export async function checkAndInitTcbService(
           helpUrl: newContext.initTcbError.helpUrl,
           rawError: initErr
         });
-        
+
         logError('[env-setup] Failed to initialize TCB service:', new Error(newContext.initTcbError.message));
 
         // Report init failure
@@ -214,9 +214,9 @@ export async function checkAndInitTcbService(
       code: err.code || err.Code,
       stack: err.stack
     });
-    
+
     logError('[env-setup] Failed to check TCB service status:', err.message || String(err));
-    
+
     // Report check failure
     await reportEnvSetupFlow({
       step: 'check_tcb_service',
@@ -262,8 +262,8 @@ export async function checkAndCreateFreeEnv(
     debug('[env-setup] DescribeUserPromotionalActivity params:', {
       Names: ["NewUser", "ReturningUser", "BaasFree"]
     });
-    
-    const activityResult = await cloudbase.commonService("tcb", "2018-06-08").call({
+
+    const activityResult = await cloudbase.commonService("tcb").call({
       Action: "DescribeUserPromotionalActivity",
       Param: {
         Names: ["NewUser", "ReturningUser", "BaasFree"]
@@ -273,7 +273,7 @@ export async function checkAndCreateFreeEnv(
     const activities = activityResult.Activities || [];
     newContext.promotionalActivities = activities.map((a: any) => a.Name || a.Type);
 
-    debug('[env-setup] Promotional activities result:', { 
+    debug('[env-setup] Promotional activities result:', {
       activities: newContext.promotionalActivities,
       count: activities.length,
       requestId: activityResult.RequestId,
@@ -291,14 +291,14 @@ export async function checkAndCreateFreeEnv(
     // Step 2: Create free environment if qualified
     if (activities.length === 0) {
       debug('[env-setup] No promotional activities available, cannot create free environment');
-      
+
       // Set error context to inform user they don't qualify for free environment
       newContext.createEnvError = {
         code: "NoPromotionalActivity",
         message: "当前账号不符合免费环境创建条件，请手动创建环境",
         helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp"
       };
-      
+
       return {
         success: false,
         context: newContext
@@ -323,10 +323,10 @@ export async function checkAndCreateFreeEnv(
         Type: activityType,
         Source: "qcloud"
       };
-      
+
       debug('[env-setup] CreateFreeEnvByActivity params:', createParams);
-      
-      const createResult = await cloudbase.commonService("tcb", "2018-06-08").call({
+
+      const createResult = await cloudbase.commonService("tcb").call({
         Action: "CreateFreeEnvByActivity",
         Param: createParams
       });
@@ -340,20 +340,20 @@ export async function checkAndCreateFreeEnv(
       });
 
       // Try multiple possible paths for EnvId
-      const envId = createResult?.EnvId || 
-                    createResult?.Response?.EnvId || 
-                    createResult?.Data?.EnvId ||
-                    createResult?.envId;
-      
+      const envId = createResult?.EnvId ||
+        createResult?.Response?.EnvId ||
+        createResult?.Data?.EnvId ||
+        createResult?.envId;
+
       debug('[env-setup] Extracted envId:', {
         envId,
-        source: createResult?.EnvId ? 'EnvId' : 
-                createResult?.Response?.EnvId ? 'Response.EnvId' :
-                createResult?.Data?.EnvId ? 'Data.EnvId' :
-                createResult?.envId ? 'envId' : 'none'
+        source: createResult?.EnvId ? 'EnvId' :
+          createResult?.Response?.EnvId ? 'Response.EnvId' :
+            createResult?.Data?.EnvId ? 'Data.EnvId' :
+              createResult?.envId ? 'envId' : 'none'
       });
 
-      debug('[env-setup] Free environment created successfully:', { 
+      debug('[env-setup] Free environment created successfully:', {
         envId,
         tranId: createResult?.TranId || createResult?.Response?.TranId,
         requestId: createResult?.RequestId || createResult?.Response?.RequestId,
@@ -366,13 +366,13 @@ export async function checkAndCreateFreeEnv(
           envId,
           createResult
         });
-        
+
         newContext.createEnvError = {
           code: "InvalidEnvId",
           message: "环境创建成功但未返回有效的环境ID，请稍后重试或手动创建环境",
           helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp"
         };
-        
+
         return {
           success: false,
           context: newContext
@@ -397,11 +397,11 @@ export async function checkAndCreateFreeEnv(
     } catch (createErr: any) {
       // Parse and clean error message
       let errorMessage = createErr.message || String(createErr);
-      
+
       // Replace TCB with CloudBase
       errorMessage = errorMessage.replace(/TCB/g, 'CloudBase');
       errorMessage = errorMessage.replace(/tcb/gi, 'CloudBase');
-      
+
       // Handle JSON error messages like "[CreateFreeEnvByActivity] {"ReturnValue":-1,...}"
       if (errorMessage.includes('[') && errorMessage.includes(']')) {
         const match = errorMessage.match(/\]\s*(.+)/);
@@ -425,7 +425,7 @@ export async function checkAndCreateFreeEnv(
           }
         }
       }
-      
+
       // Clean up common error patterns
       errorMessage = errorMessage.replace(/\[CreateFreeEnvByActivity\]/gi, '');
       errorMessage = errorMessage.trim();
@@ -467,7 +467,7 @@ export async function checkAndCreateFreeEnv(
       code: err.code || err.Code,
       stack: err.stack
     });
-    
+
     logError('[env-setup] Failed to check promotional activities:', err.message || String(err));
 
     // Report check failure
@@ -490,7 +490,9 @@ export async function checkAndCreateFreeEnv(
  */
 export async function getUinForTelemetry(): Promise<string | undefined> {
   try {
-    const loginState = await getLoginState();
+    // Get region from environment variable for auth URL
+    const region = process.env.TCB_REGION;
+    const loginState = await getLoginState({ region });
     // Try to extract UIN from loginState
     // Note: actual field name may vary, adjust based on actual response
     return loginState.uin || undefined;
