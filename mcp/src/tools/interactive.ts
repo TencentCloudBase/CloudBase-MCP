@@ -368,7 +368,8 @@ export async function _promptAndSetEnvironmentId(
   let queryEnvError: string | undefined;
 
   try {
-    // Use commonService to call DescribeEnvs with filter parameters
+    // Use 
+    Service to call DescribeEnvs with filter parameters
     // Filter parameters match the reference conditions provided by user
     const queryParams = {
       EnvTypes: ["weda", "baas"], // Include weda and baas (normal) environments

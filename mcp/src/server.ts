@@ -20,6 +20,7 @@ import { registerSecurityRuleTools } from "./tools/security-rule.js";
 import { CloudBaseOptions, Logger } from "./types.js";
 import { enableCloudMode } from "./utils/cloud-mode.js";
 import { info } from './utils/logger.js';
+import { isInternationalRegion } from "./utils/tencet-cloud.js";
 import { wrapServerWithTelemetry } from "./utils/tool-wrapper.js";
 
 // 插件定义
@@ -47,7 +48,11 @@ const DEFAULT_PLUGINS = [
 ];
 
 function registerDatabase(server: ExtendedMcpServer) {
-  registerDatabaseTools(server);
+  // Skip NoSQL database tools for international region (Singapore) as it doesn't support NoSQL DB
+  const region = server.cloudBaseOptions?.region || process.env.TCB_REGION;
+  if (!isInternationalRegion(region)) {
+    registerDatabaseTools(server);
+  }
   registerSQLDatabaseTools(server);
   registerDataModelTools(server);
 }

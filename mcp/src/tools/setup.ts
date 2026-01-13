@@ -211,11 +211,11 @@ const INTEGRATION_IDE_MAPPING: Record<string, string> = {
 export type DownloadTemplateIdeResolution =
   | { ok: true; resolvedIDE: string }
   | {
-      ok: false;
-      reason: "missing_ide" | "unmapped_integration_ide";
-      supportedIDEs: string[];
-      integrationIDE?: string;
-    };
+    ok: false;
+    reason: "missing_ide" | "unmapped_integration_ide";
+    supportedIDEs: string[];
+    integrationIDE?: string;
+  };
 
 // Resolve IDE for downloadTemplate without side effects (unit-test friendly).
 export function resolveDownloadTemplateIDE(
@@ -525,9 +525,8 @@ export function registerSetupTools(server: ExtendedMcpServer) {
           .describe("要下载的模板类型"),
         ide: z
           .enum(IDE_TYPES)
-          .optional()
           .describe(
-            "指定要下载的IDE类型。如果未指定，会根据 INTEGRATION_IDE 环境变量自动选择对应的IDE配置；如果环境变量也未设置，则必须传入此参数",
+            "指定要下载的IDE类型。",
           ),
         overwrite: z
           .boolean()
@@ -554,7 +553,7 @@ export function registerSetupTools(server: ExtendedMcpServer) {
       try {
         const ideResolution = resolveDownloadTemplateIDE(
           ide,
-          process.env.INTEGRATION_IDE,
+          undefined,
         );
 
         if (!ideResolution.ok) {

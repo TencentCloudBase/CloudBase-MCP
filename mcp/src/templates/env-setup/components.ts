@@ -2,17 +2,17 @@
  * Reusable UI components for env setup page
  */
 
-export function renderHeader(accountInfo?: { uin?: string }, ide?: string) {
+export function renderHeader(accountInfo?: { uin?: string; region?: string }, ide?: string) {
   const hasAccount = !!accountInfo?.uin;
   const isCodeBuddy = ide === "CodeBuddy";
-  
+
   return `
     <div class="header">
       <div class="header-left">
         <img class="logo" src="https://7463-tcb-advanced-a656fc-1257967285.tcb.qcloud.la/mcp/cloudbase-logo.svg" alt="CloudBase Logo" />
         <span class="title">CloudBase</span>
       </div>
-      ${hasAccount ? `
+      ${(hasAccount && accountInfo.region !== 'ap-singapore') ? /** 国际站不支持切 */ `
         <div class="header-right">
           <div class="account-section">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -20,6 +20,7 @@ export function renderHeader(accountInfo?: { uin?: string }, ide?: string) {
               <circle cx="12" cy="7" r="4"/>
             </svg>
             <span class="account-uin">${accountInfo.uin}</span>
+            ${accountInfo.region ? `<span class="account-region">${accountInfo.region}</span>` : ''}
             ${!isCodeBuddy ? `
               <button class="btn-switch" onclick="switchAccount()" title="切换账号">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -76,7 +77,7 @@ export function renderEnvItem(env: any, index: number) {
   const alias = env.Alias || '(未命名)';
   const envId = env.EnvId;
   const hasAlias = !!env.Alias;
-  
+
   return `
     <div class="env-item" onclick="selectEnv('${envId}', this)">
       <div class="env-info">
@@ -187,12 +188,12 @@ export function renderSuccessState() {
 export function renderErrorBanner(errorContext: any, sessionId?: string) {
   const initTcbError = errorContext?.initTcbError;
   const createEnvError = errorContext?.createEnvError;
-  
+
   // Only show initTcbError, hide createEnvError
   if (!initTcbError) {
     return '';
   }
-  
+
   return `
     <div class="info-banner" id="errorBanner">
       ${initTcbError ? `
