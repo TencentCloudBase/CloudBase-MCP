@@ -134,7 +134,7 @@ export async function checkAndInitTcbService(
       tcbServiceChecked: newContext.tcbServiceChecked
     });
 
-    const checkResult = await cloudbase.commonService("tcb").call({
+    const checkResult = await cloudbase.commonService("tcb", "2018-06-08").call({
       Action: "CheckTcbService",
       Param: {}
     });
@@ -160,7 +160,7 @@ export async function checkAndInitTcbService(
       debug('[env-setup] InitTcb params:', { Source: "qcloud", Channel: "mcp" });
 
       try {
-        const initResult = await cloudbase.commonService("tcb").call({
+        const initResult = await cloudbase.commonService("tcb", "2018-06-08").call({
           Action: "InitTcb",
           Param: {
             Source: "qcloud",
@@ -263,7 +263,7 @@ export async function checkAndCreateFreeEnv(
       Names: ["NewUser", "ReturningUser", "BaasFree"]
     });
 
-    const activityResult = await cloudbase.commonService("tcb").call({
+    const activityResult = await cloudbase.commonService("tcb", "2018-06-08").call({
       Action: "DescribeUserPromotionalActivity",
       Param: {
         Names: ["NewUser", "ReturningUser", "BaasFree"]
@@ -326,7 +326,7 @@ export async function checkAndCreateFreeEnv(
 
       debug('[env-setup] CreateFreeEnvByActivity params:', createParams);
 
-      const createResult = await cloudbase.commonService("tcb").call({
+      const createResult = await cloudbase.commonService("tcb", "2018-06-08").call({
         Action: "CreateFreeEnvByActivity",
         Param: createParams
       });

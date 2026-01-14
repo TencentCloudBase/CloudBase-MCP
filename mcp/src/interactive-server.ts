@@ -284,7 +284,7 @@ export class InteractiveServer {
                       Channels: ["dcloud", "iotenable", "tem", "scene_module"],
                     };
                     
-                    envResult = await sessionData.manager.commonService("tcb").call({
+                    envResult = await sessionData.manager.commonService("tcb", "2018-06-08").call({
                       Action: "DescribeEnvs",
                       Param: queryParams,
                     });

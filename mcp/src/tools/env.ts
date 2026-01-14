@@ -249,7 +249,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               });
               // Use commonService to call DescribeEnvs with filter parameters
               // Filter parameters match the reference conditions provided by user
-              result = await cloudbaseList.commonService("tcb").call({
+              result = await cloudbaseList.commonService("tcb", "2018-06-08").call({
                 Action: "DescribeEnvs",
                 Param: {
                   EnvTypes: ["weda", "baas"], // Include weda and baas (normal) environments
