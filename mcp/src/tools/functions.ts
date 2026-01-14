@@ -70,12 +70,12 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
     "getFunctionList",
     {
       title: "查询云函数列表或详情",
-      description: "获取云函数列表或单个函数详情，通过 action 参数区分操作类型",
+      description: "获取云函数列表或单个函数详情。通过 action 参数区分操作类型：list=获取函数列表（默认，无需额外参数），detail=获取函数详情（需要提供 name 参数指定函数名称）",
       inputSchema: {
-        action: z.enum(["list", "detail"]).optional().describe("操作类型：list=获取函数列表（默认），detail=获取函数详情"),
+        action: z.enum(["list", "detail"]).optional().describe("操作类型：list=获取函数列表（默认，无需额外参数），detail=获取函数详情（需要提供 name 参数）"),
         limit: z.number().optional().describe("范围（list 操作时使用）"),
         offset: z.number().optional().describe("偏移（list 操作时使用）"),
-        name: z.string().optional().describe("函数名称（detail 操作时必需）"),
+        name: z.string().optional().describe("要查询的函数名称。当 action='detail' 时，此参数为必填项，必须提供已存在的函数名称。可通过 action='list' 操作获取可用的函数名称列表"),
         codeSecret: z.string().optional().describe("代码保护密钥（detail 操作时使用）")
       },
       annotations: {
