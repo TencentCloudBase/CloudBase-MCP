@@ -154,6 +154,9 @@ const IDES: IDE[] = [
     platform: '独立 IDE',
     configPath: '.trae/mcp.json',
     iconUrl: 'https://lf-cdn.trae.ai/obj/trae-ai-sg/trae_website_prod/favicon.png',
+    docUrl: 'https://docs.trae.ai/ide/use-mcp-servers-in-agents?_lang=zh',
+    supportsProjectMCP: true,
+    oneClickInstallUrl: 'trae://trae.ai-ide/mcp-import?type=stdio&name=cloudbase&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJAY2xvdWRiYXNlL2Nsb3VkYmFzZS1tY3BAbGF0ZXN0Il0sImVudiI6eyJJTlRFR1JBVElPTl9JREUiOiJUcmFlIn19',
     configExample: `{
   "mcpServers": {
     "cloudbase": {
@@ -726,6 +729,9 @@ export default function IDESelector({
     return ide.oneClickInstallUrl || null;
   };
 
+  const oneClickInstallUrl = getOneClickInstallUrl();
+  const isProtocolInstallUrl = !!oneClickInstallUrl && !/^https?:\/\//i.test(oneClickInstallUrl);
+
   const handleCopyCode = async () => {
     await navigator.clipboard.writeText(ide.configExample);
     setCopiedCode(true);
@@ -1022,15 +1028,37 @@ export default function IDESelector({
               </div>
             )}
 
+            {/* Trae builder-with-mcp guidance */}
+            {ide.id === 'trae' && (
+              <div className={styles.templateHint}>
+                <strong>{isEnglish ? 'Note:' : '提示：'}</strong>
+                {isEnglish ? (
+                  <span> After installation, use MCP servers inside an Agent via “Builder with MCP” or “SOLO Coder”.</span>
+                ) : (
+                  <span> 安装完成后，请在 “Builder with MCP” 或 “SOLO Coder” 等智能体中使用。</span>
+                )}
+                {ide.docUrl && (
+                  <a
+                    href={ide.docUrl}
+                    className={styles.templateLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {isEnglish ? 'View docs' : '查看文档'}
+                  </a>
+                )}
+              </div>
+            )}
+
             {/* One-click install button */}
-            {getOneClickInstallUrl() && (
+            {oneClickInstallUrl && (
               <div className={styles.oneClickInstall}>
                 <p className={styles.oneClickLabel}>{t.oneClickInstall}:</p>
                 <a
-                  href={getOneClickInstallUrl()!}
+                  href={oneClickInstallUrl}
                   className={styles.oneClickButton}
-                  target={ide.id === 'github-copilot' ? undefined : '_blank'}
-                  rel={ide.id === 'github-copilot' ? undefined : 'noopener noreferrer'}
+                  target={(ide.id === 'github-copilot' || isProtocolInstallUrl) ? undefined : '_blank'}
+                  rel={(ide.id === 'github-copilot' || isProtocolInstallUrl) ? undefined : 'noopener noreferrer'}
                   onClick={() => {
                     reportEvent({
                       name: 'IDE Selector - One Click Install',
@@ -1052,6 +1080,17 @@ export default function IDESelector({
                           src={getIconUrl(ide)!}
                           alt=""
                           className={`${styles.customButtonIcon} ${ide.id === 'cursor' ? styles.cursorIcon : ''}`}
+                        />
+                      )}
+                      <span className={styles.customButtonText}>Add to {ide.name}</span>
+                    </div>
+                  ) : ide.id === 'trae' ? (
+                    <div className={styles.customOneClickButton}>
+                      {getIconUrl(ide) && (
+                        <img
+                          src={getIconUrl(ide)!}
+                          alt=""
+                          className={styles.customButtonIcon}
                         />
                       )}
                       <span className={styles.customButtonText}>Add to {ide.name}</span>
