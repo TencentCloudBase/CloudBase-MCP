@@ -21,7 +21,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,7 +36,7 @@ jobs:
         with:
           repository: TencentCloudBase/skills
           path: skills-repo
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SKILLS_REPO_TOKEN }}
       
       - name: Copy output to target repository
         run: |
@@ -49,10 +48,15 @@ jobs:
           cp -r ../.skills-repo-output/* .
       
       - name: Commit and push changes
+        env:
+          SKILLS_REPO_TOKEN: ${{ secrets.SKILLS_REPO_TOKEN }}
         run: |
           cd skills-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Configure git to use token for push
+          git remote set-url origin https://x-access-token:${SKILLS_REPO_TOKEN}@github.com/TencentCloudBase/skills.git
           
           # Check if there are any changes
           if [ -n "$(git status --porcelain)" ]; then
