@@ -1,0 +1,64 @@
+name: Push Skills Repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config/.claude/skills/**'
+      - 'scripts/build-skills-repo.mjs'
+      - 'scripts/skills-repo-template/**'
+  workflow_dispatch:
+
+jobs:
+  push-skills:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Build skills repository
+        run: |
+          node scripts/build-skills-repo.mjs
+      
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: TencentCloudBase/skills
+          path: skills-repo
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Copy output to target repository
+        run: |
+          # Remove existing content except .git
+          cd skills-repo
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          
+          # Copy all content from .skills-repo-output
+          cp -r ../.skills-repo-output/* .
+      
+      - name: Commit and push changes
+        run: |
+          cd skills-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are any changes
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "chore: sync skills from CloudBase-AI-ToolKit [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
