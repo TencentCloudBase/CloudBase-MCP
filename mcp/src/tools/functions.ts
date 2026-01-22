@@ -363,17 +363,35 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
     },
     async ({ name, params }: { name: string; params?: Record<string, any> }) => {
       // 使用闭包中的 cloudBaseOptions
-      const cloudbase = await getManager();
-      const result = await cloudbase.functions.invokeFunction(name, params);
-      logCloudBaseResult(server.logger, result);
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
+      try {
+        const cloudbase = await getManager();
+        const result = await cloudbase.functions.invokeFunction(name, params);
+        logCloudBaseResult(server.logger, result);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      } catch (error) {
+        const errorMessage = (error instanceof Error ? error.message : String(error));
+
+        if (
+          errorMessage.includes("Function not found") ||
+          errorMessage.includes("函数不存在")
+        ) {
+          throw new Error(
+            `${errorMessage}\n\n` +
+            `Tip: "invokeFunction" can only call deployed cloud functions. ` +
+            `For database operations (such as creating collections), ` +
+            `please use the appropriate database tools instead.`
+          );
+        }
+
+        throw error;
+      }
     }
   );
 
