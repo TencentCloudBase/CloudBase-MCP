@@ -13,7 +13,7 @@ CloudBase MCP provides essential tools for CloudBase development, including envi
 
 ### MCP Configuration Instructions
 
-Most Coding Agents support some kind of MCP configuration in Project level. For example:
+Most Coding Agents support project-level MCP configuration. The standard JSON configuration structure is:
 ```json
 {
   "mcpServers": {
@@ -23,6 +23,27 @@ Most Coding Agents support some kind of MCP configuration in Project level. For 
     }
   }
 }
+```
+
+**Project-level configuration file locations:**
+
+- **Cursor**: `.cursor/mcp.json`
+- **Claude Code**: `.mcp.json`
+- **Windsurf**: `~/.codeium/windsurf/mcp_config.json` (user-level, no project-level JSON config)
+- **Cline**: Check Cline settings for project-level MCP configuration file location
+- **GitHub Copilot Chat (VS Code)**: Check VS Code settings for MCP configuration file location
+
+**Format differences:**
+
+- **Continue**: Uses YAML format in `.continue/mcpServers/` folder:
+```yaml
+name: CloudBase MCP
+version: 1.0.0
+schema: v1
+mcpServers:
+  - uses: stdio
+    command: npx
+    args: ["@cloudbase/cloudbase-mcp@latest"]
 ```
 
 ---
