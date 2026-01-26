@@ -287,6 +287,15 @@ export async function _promptAndSetEnvironmentId(
   });
   debug("[interactive] CloudBase manager obtained");
 
+  // If envId is already set, return directly
+  const envId = serverCloudBaseOptions?.envId || process.env.CLOUDBASE_ENV_ID;
+  if (envId) {
+    return {
+      selectedEnvId: envId,
+      cancelled: false,
+    }
+  }
+
   // Step 2.1: Check and initialize TCB service if needed
   // Check if retry is requested (from interactive server session data)
   // Ensure server is resolved if it's a Promise (CLI mode)

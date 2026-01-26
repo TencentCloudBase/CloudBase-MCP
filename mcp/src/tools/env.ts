@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { logout } from "../auth.js";
 import {
-    getCloudBaseManager,
-    logCloudBaseResult,
-    resetCloudBaseManagerCache,
+  getCloudBaseManager,
+  logCloudBaseResult,
+  resetCloudBaseManagerCache,
 } from "../cloudbase-manager.js";
 import { ExtendedMcpServer } from "../server.js";
 import { debug } from "../utils/logger.js";
@@ -131,7 +131,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             // Get CLAUDE.md prompt content (skip for CodeBuddy IDE)
             let promptContent = "";
             const currentIde = server.ide || process.env.INTEGRATION_IDE;
-            if (currentIde !== "CodeBuddy") {
+            if (currentIde !== "CodeBuddy" && process.env.CLOUDBASE_GUIDE_PROMPT !== "false") {
               try {
                 promptContent = await getClaudePrompt();
               } catch (promptError) {
@@ -335,7 +335,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
 
         // For info action, append CLAUDE.md prompt content (skip for CodeBuddy IDE)
         const currentIde = server.ide || process.env.INTEGRATION_IDE;
-        if (action === "info" && currentIde !== "CodeBuddy") {
+        if (action === "info" && currentIde !== "CodeBuddy" && process.env.CLOUDBASE_GUIDE_PROMPT !== "false") {
           try {
             const promptContent = await getClaudePrompt();
             if (promptContent) {
